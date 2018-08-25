@@ -1,0 +1,52 @@
+<?php
+/**
+ *  Copyright (c) 2018 Danilo Andrade
+ *
+ *  This file is part of the apli project.
+ *
+ *  @project apli
+ *  @file ContainerTrait.php
+ *  @author Danilo Andrade <danilo@webbingbrasil.com.br>
+ *  @date 25/08/18 at 14:42
+ */
+
+/**
+ * Created by PhpStorm.
+ * User: Danilo
+ * Date: 25/08/2018
+ * Time: 14:42
+ */
+
+namespace Apli\Router;
+
+use Psr\Container\ContainerInterface;
+
+trait ContainerTrait
+{
+
+    /**
+     * @var \Psr\Container\ContainerInterface
+     */
+    protected $container;
+    /**
+     * Get container.
+     *
+     * @return \Psr\Container\ContainerInterface
+     */
+    public function getContainer()
+    {
+        return $this->container;
+    }
+    /**
+     * Set container.
+     *
+     * @param \Psr\Container\ContainerInterface $container
+     *
+     * @return self
+     */
+    public function setContainer(ContainerInterface $container)
+    {
+        $this->container = $container;
+        return $this;
+    }
+}
