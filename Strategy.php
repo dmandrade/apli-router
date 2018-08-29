@@ -7,7 +7,7 @@
  *  @project apli
  *  @file Strategy.php
  *  @author Danilo Andrade <danilo@webbingbrasil.com.br>
- *  @date 25/08/18 at 13:46
+ *  @date 25/08/18 at 18:05
  */
 
 /**
@@ -17,7 +17,7 @@
  * Time: 13:46
  */
 
-namespace Apli\Router\Strategy;
+namespace Apli\Router;
 
 use Apli\Router\Exception\MethodNotAllowedException;
 use Apli\Router\Exception\NotFoundException;
