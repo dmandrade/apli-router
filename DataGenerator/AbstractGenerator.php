@@ -7,7 +7,7 @@
  *  @project apli
  *  @file AbstractGenerator.php
  *  @author Danilo Andrade <danilo@webbingbrasil.com.br>
- *  @date 25/08/18 at 14:04
+ *  @date 27/08/18 at 10:26
  */
 
 /**
@@ -16,6 +16,7 @@
  * Date: 25/08/2018
  * Time: 14:04
  */
+
 namespace Apli\Router\DataGenerator;
 
 use Apli\Router\DataGenerator;
@@ -30,16 +31,6 @@ abstract class AbstractGenerator implements DataGenerator
     protected $methodToRegexToRoutesMap = [];
 
     /**
-     * @return int
-     */
-    abstract protected function getApproxChunkSize();
-
-    /**
-     * @return mixed[]
-     */
-    abstract protected function processChunk($regexToRoutesMap);
-
-    /**
      * @param Route $route
      * @param array $routeData
      */
@@ -51,41 +42,6 @@ abstract class AbstractGenerator implements DataGenerator
         }
 
         $this->addVariableRoute($route, $routeData);
-    }
-
-    /**
-     * @return mixed[]
-     */
-    public function getData()
-    {
-        if (empty($this->methodToRegexToRoutesMap)) {
-            return [$this->staticRoutes, []];
-        }
-        return [$this->staticRoutes, $this->generateVariableRouteData()];
-    }
-
-    /**
-     * @return mixed[]
-     */
-    private function generateVariableRouteData()
-    {
-        $data = [];
-        foreach ($this->methodToRegexToRoutesMap as $method => $regexToRoutesMap) {
-            $chunkSize = $this->computeChunkSize(count($regexToRoutesMap));
-            $chunks = array_chunk($regexToRoutesMap, $chunkSize, true);
-            $data[$method] = array_map([$this, 'processChunk'], $chunks);
-        }
-        return $data;
-    }
-
-    /**
-     * @param int
-     * @return int
-     */
-    private function computeChunkSize($count)
-    {
-        $numParts = max(1, round($count / $this->getApproxChunkSize()));
-        return (int) ceil($count / $numParts);
     }
 
     /**
@@ -168,7 +124,7 @@ abstract class AbstractGenerator implements DataGenerator
                 ));
             }
             $variables[$varName] = $varName;
-            $regex .= '(' . $regexPart . ')';
+            $regex .= '('.$regexPart.')';
         }
         return [$regex, $variables];
     }
@@ -184,7 +140,7 @@ abstract class AbstractGenerator implements DataGenerator
             return false;
         }
         // Semi-accurate detection for capturing groups
-        return (bool) preg_match(
+        return (bool)preg_match(
             '~
                 (?:
                     \(\?\(
@@ -200,4 +156,49 @@ abstract class AbstractGenerator implements DataGenerator
             $regex
         );
     }
+
+    /**
+     * @return mixed[]
+     */
+    public function getData()
+    {
+        if (empty($this->methodToRegexToRoutesMap)) {
+            return [$this->staticRoutes, []];
+        }
+        return [$this->staticRoutes, $this->generateVariableRouteData()];
+    }
+
+    /**
+     * @return mixed[]
+     */
+    private function generateVariableRouteData()
+    {
+        $data = [];
+        foreach ($this->methodToRegexToRoutesMap as $method => $regexToRoutesMap) {
+            $chunkSize = $this->computeChunkSize(count($regexToRoutesMap));
+            $chunks = array_chunk($regexToRoutesMap, $chunkSize, true);
+            $data[$method] = array_map([$this, 'processChunk'], $chunks);
+        }
+        return $data;
+    }
+
+    /**
+     * @param int
+     * @return int
+     */
+    private function computeChunkSize($count)
+    {
+        $numParts = max(1, round($count / $this->getApproxChunkSize()));
+        return (int)ceil($count / $numParts);
+    }
+
+    /**
+     * @return int
+     */
+    abstract protected function getApproxChunkSize();
+
+    /**
+     * @return mixed[]
+     */
+    abstract protected function processChunk($regexToRoutesMap);
 }

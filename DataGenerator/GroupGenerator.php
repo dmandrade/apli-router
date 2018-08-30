@@ -7,7 +7,7 @@
  *  @project apli
  *  @file GroupGenerator.php
  *  @author Danilo Andrade <danilo@webbingbrasil.com.br>
- *  @date 25/08/18 at 14:06
+ *  @date 27/08/18 at 10:26
  */
 
 /**
@@ -44,11 +44,11 @@ class GroupGenerator extends AbstractGenerator
         foreach ($regexToRoutesMap as $regex => $route) {
             $numVariables = count($route->getVariables());
             $numGroups = max($numGroups, $numVariables);
-            $regexes[] = $regex . str_repeat('()', $numGroups - $numVariables);
+            $regexes[] = $regex.str_repeat('()', $numGroups - $numVariables);
             $routeMap[$numGroups + 1] = [$route, $route->getVariables()];
             ++$numGroups;
         }
-        $regex = '~^(?|' . implode('|', $regexes) . ')$~';
+        $regex = '~^(?|'.implode('|', $regexes).')$~';
         return ['regex' => $regex, 'routeMap' => $routeMap];
     }
 }

@@ -7,7 +7,7 @@
  *  @project apli
  *  @file RouteCollector.php
  *  @author Danilo Andrade <danilo@webbingbrasil.com.br>
- *  @date 25/08/18 at 13:56
+ *  @date 27/08/18 at 10:26
  */
 
 /**
@@ -41,14 +41,14 @@ class RouteCollector
     /**
      * Constructor.
      *
-     * @param string                        $prefix
-     * @param callable                      $callback
+     * @param string          $prefix
+     * @param callable        $callback
      * @param RouteCollection $collection
      */
     public function __construct(string $prefix, callable $callback, RouteCollectionInterface $collection)
     {
-        $this->callback   = $callback;
+        $this->callback = $callback;
         $this->collection = $collection;
-        $this->prefix     = sprintf('/%s', ltrim($prefix, '/'));
+        $this->prefix = sprintf('/%s', ltrim($prefix, '/'));
     }
 }

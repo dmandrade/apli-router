@@ -7,7 +7,7 @@
  *  @project apli
  *  @file ApplicationStrategy.php
  *  @author Danilo Andrade <danilo@webbingbrasil.com.br>
- *  @date 25/08/18 at 13:45
+ *  @date 27/08/18 at 10:26
  */
 
 /**
@@ -54,14 +54,6 @@ class ApplicationStrategy implements Strategy
     }
 
     /**
-     * @param MethodNotAllowedException $exception
-     * @return MiddlewareInterface
-     */
-    public function getMethodNotAllowedDecorator(MethodNotAllowedException $exception)
-    {
-        return $this->throwExceptionMiddleware($exception);
-    }
-    /**
      * Return a middleware that simply throws and exception.
      *
      * @param \Exception $exception
@@ -73,6 +65,7 @@ class ApplicationStrategy implements Strategy
         return new class($exception) implements MiddlewareInterface
         {
             protected $exception;
+
             public function __construct(Exception $exception)
             {
                 $this->exception = $exception;
@@ -86,10 +79,20 @@ class ApplicationStrategy implements Strategy
             public function process(
                 ServerRequestInterface $request,
                 RequestHandlerInterface $requestHandler
-            ) : ResponseInterface {
+            ): ResponseInterface
+            {
                 throw $this->exception;
             }
         };
+    }
+
+    /**
+     * @param MethodNotAllowedException $exception
+     * @return MiddlewareInterface
+     */
+    public function getMethodNotAllowedDecorator(MethodNotAllowedException $exception)
+    {
+        return $this->throwExceptionMiddleware($exception);
     }
 
     /**
@@ -107,7 +110,8 @@ class ApplicationStrategy implements Strategy
             public function process(
                 ServerRequestInterface $request,
                 RequestHandlerInterface $requestHandler
-            ) : ResponseInterface {
+            ): ResponseInterface
+            {
                 try {
                     return $requestHandler->handle($request);
                 } catch (Exception $e) {

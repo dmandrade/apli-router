@@ -7,7 +7,7 @@
  *  @project apli
  *  @file MethodNotAllowedException.php
  *  @author Danilo Andrade <danilo@webbingbrasil.com.br>
- *  @date 25/08/18 at 14:30
+ *  @date 27/08/18 at 10:26
  */
 
 /**
@@ -19,8 +19,8 @@
 
 namespace Apli\Router\Exception;
 
-use Exception;
 use Apli\Router\Exception\Exception as HttpException;
+use Exception;
 
 class MethodNotAllowedException extends HttpException
 {
@@ -28,12 +28,13 @@ class MethodNotAllowedException extends HttpException
     /**
      * Constructor
      *
-     * @param array       $allowed
-     * @param string      $message
+     * @param array      $allowed
+     * @param string     $message
      * @param \Exception $previous
-     * @param integer     $code
+     * @param integer    $code
      */
-    public function __construct(array $allowed = [], $message = 'Method Not Allowed', Exception $previous = null, $code = 0) {
+    public function __construct(array $allowed = [], $message = 'Method Not Allowed', Exception $previous = null, $code = 0)
+    {
         $headers = [
             'Allow' => implode(', ', $allowed)
         ];

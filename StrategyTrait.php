@@ -7,7 +7,7 @@
  *  @project apli
  *  @file StrategyTrait.php
  *  @author Danilo Andrade <danilo@webbingbrasil.com.br>
- *  @date 25/08/18 at 19:02
+ *  @date 27/08/18 at 10:26
  */
 
 /**
@@ -28,6 +28,16 @@ trait StrategyTrait
     protected $strategy;
 
     /**
+     * Gets the strategy.
+     *
+     * @return Strategy
+     */
+    public function getStrategy()
+    {
+        return $this->strategy;
+    }
+
+    /**
      * Set the strategy.
      *
      * @param Strategy $strategy
@@ -38,15 +48,5 @@ trait StrategyTrait
     {
         $this->strategy = $strategy;
         return $this;
-    }
-
-    /**
-     * Gets the strategy.
-     *
-     * @return Strategy
-     */
-    public function getStrategy()
-    {
-        return $this->strategy;
     }
 }

@@ -7,7 +7,7 @@
  *  @project apli
  *  @file NotFoundException.php
  *  @author Danilo Andrade <danilo@webbingbrasil.com.br>
- *  @date 25/08/18 at 14:24
+ *  @date 27/08/18 at 10:26
  */
 
 /**
@@ -16,19 +16,20 @@
  * Date: 25/08/2018
  * Time: 14:24
  */
+
 namespace Apli\Router\Exception;
 
-use Exception;
 use Apli\Router\Exception\Exception as HttpException;
+use Exception;
 
 class NotFoundException extends HttpException
 {
     /**
      * Constructor
      *
-     * @param string      $message
+     * @param string     $message
      * @param \Exception $previous
-     * @param integer     $code
+     * @param integer    $code
      */
     public function __construct($message = 'Not Found', Exception $previous = null, $code = 0)
     {

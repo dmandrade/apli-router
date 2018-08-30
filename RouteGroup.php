@@ -7,7 +7,7 @@
  *  @project apli
  *  @file RouteGroup.php
  *  @author Danilo Andrade <danilo@webbingbrasil.com.br>
- *  @date 25/08/18 at 13:14
+ *  @date 27/08/18 at 10:26
  */
 
 namespace Apli\Router;
@@ -34,15 +34,15 @@ class RouteGroup
     /**
      * Constructor.
      *
-     * @param string                        $prefix
-     * @param callable                      $callback
+     * @param string          $prefix
+     * @param callable        $callback
      * @param RouteCollection $collection
      */
     public function __construct($prefix, callable $callback, RouteCollection $collection)
     {
-        $this->callback   = $callback;
+        $this->callback = $callback;
         $this->collection = $collection;
-        $this->prefix     = sprintf('/%s', ltrim($prefix, '/'));
+        $this->prefix = sprintf('/%s', ltrim($prefix, '/'));
     }
 
     /**
@@ -73,7 +73,7 @@ class RouteGroup
      */
     public function map($method, $path, $handler)
     {
-        $path  = ($path === '/') ? $this->prefix : $this->prefix . sprintf('/%s', ltrim($path, '/'));
+        $path = ($path === '/') ? $this->prefix : $this->prefix.sprintf('/%s', ltrim($path, '/'));
         $route = $this->collection->map($method, $path, $handler);
         $route->setParentGroup($this);
         if ($host = $this->getHost()) {
@@ -88,7 +88,7 @@ class RouteGroup
         foreach ($this->getMiddlewareStack() as $middleware) {
             $route->middleware($middleware);
         }
-        if (is_null($route->getStrategy()) && ! is_null($this->getStrategy())) {
+        if (is_null($route->getStrategy()) && !is_null($this->getStrategy())) {
             $route->setStrategy($this->getStrategy());
         }
         return $route;

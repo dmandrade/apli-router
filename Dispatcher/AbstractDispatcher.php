@@ -7,7 +7,7 @@
  *  @project apli
  *  @file AbstractDispatcher.php
  *  @author Danilo Andrade <danilo@webbingbrasil.com.br>
- *  @date 25/08/18 at 13:42
+ *  @date 27/08/18 at 10:26
  */
 
 /**
@@ -29,11 +29,6 @@ abstract class AbstractDispatcher implements Dispatcher
 
     /** @var mixed[] */
     protected $variableRouteData = [];
-
-    /**
-     * @return mixed[]
-     */
-    abstract protected function dispatchVariableRoute($routeData, $uri);
 
     public function dispatch($httpMethod, $uri)
     {
@@ -94,4 +89,9 @@ abstract class AbstractDispatcher implements Dispatcher
         }
         return [self::NOT_FOUND];
     }
+
+    /**
+     * @return mixed[]
+     */
+    abstract protected function dispatchVariableRoute($routeData, $uri);
 }

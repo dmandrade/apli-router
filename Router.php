@@ -7,7 +7,7 @@
  *  @project apli
  *  @file Router.php
  *  @author Danilo Andrade <danilo@webbingbrasil.com.br>
- *  @date 25/08/18 at 13:05
+ *  @date 27/08/18 at 10:26
  */
 
 /**
@@ -20,12 +20,12 @@
 namespace Apli\Router;
 
 use Apli\Router\DataGenerator\GroupGenerator;
+use Apli\Router\Dispatcher\Dispatcher;
 use Apli\Router\Parser\Std;
 use Apli\Router\Strategy\ApplicationStrategy;
 use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Apli\Router\Dispatcher\Dispatcher;
 
 class Router implements RouteCollection
 {
@@ -60,11 +60,11 @@ class Router implements RouteCollection
      * @var array
      */
     protected $patternMatchers = [
-        '/{(.+?):number}/'        => '{$1:[0-9]+}',
-        '/{(.+?):word}/'          => '{$1:[a-zA-Z]+}',
+        '/{(.+?):number}/' => '{$1:[0-9]+}',
+        '/{(.+?):word}/' => '{$1:[a-zA-Z]+}',
         '/{(.+?):alphanum_dash}/' => '{$1:[a-zA-Z0-9-_]+}',
-        '/{(.+?):slug}/'          => '{$1:[a-z0-9-]+}',
-        '/{(.+?):uuid}/'          => '{$1:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}+}'
+        '/{(.+?):slug}/' => '{$1:[a-z0-9-]+}',
+        '/{(.+?):uuid}/' => '{$1:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}+}'
     ];
 
     /**
@@ -80,34 +80,6 @@ class Router implements RouteCollection
     }
 
     /**
-     * Adds a route to the collection.
-     *
-     * The syntax used in the $route string depends on the used route parser.
-     *
-     * @param string|string[] $httpMethod
-     * @param string $route
-     * @param mixed  $handler
-     */
-    protected function addRoute(Route $route)
-    {
-        $path = $this->parseRoutePath($route->getPath());
-        $routeDatas = $this->routeParser->parse($path);
-        foreach ($routeDatas as $routeData) {
-            $this->dataGenerator->addRoute($route, $routeData);
-        }
-    }
-
-    /**
-     * Returns the collected route data, as provided by the data generator.
-     *
-     * @return array
-     */
-    public function getData()
-    {
-        return $this->dataGenerator->getData();
-    }
-
-    /**
      * @param string $method
      * @param string $path
      * @param        $handler
@@ -115,7 +87,7 @@ class Router implements RouteCollection
      */
     public function map($method, $path, $handler)
     {
-        $path  = sprintf('/%s', ltrim($path, '/'));
+        $path = sprintf('/%s', ltrim($path, '/'));
         $route = new Route($method, $path, $handler);
         $this->routes[] = $route;
         return $route;
@@ -131,7 +103,7 @@ class Router implements RouteCollection
      */
     public function group($prefix, callable $group)
     {
-        $group          = new RouteGroup($prefix, $group, $this);
+        $group = new RouteGroup($prefix, $group, $this);
         $this->groups[] = $group;
         return $group;
     }
@@ -152,7 +124,7 @@ class Router implements RouteCollection
             ->setStrategy($this->getStrategy())
             ->dispatchRequest($request);
     }
-    
+
     /**
      * Prepare all routes, build name index and filter out none matching
      * routes before being passed off to the parser.
@@ -171,36 +143,21 @@ class Router implements RouteCollection
 
         foreach ($routes as $key => $route) {
             // check for scheme condition
-            if (! is_null($route->getScheme()) && $route->getScheme() !== $request->getUri()->getScheme()) {
+            if (!is_null($route->getScheme()) && $route->getScheme() !== $request->getUri()->getScheme()) {
                 continue;
             }
             // check for domain condition
-            if (! is_null($route->getHost()) && $route->getHost() !== $request->getUri()->getHost()) {
+            if (!is_null($route->getHost()) && $route->getHost() !== $request->getUri()->getHost()) {
                 continue;
             }
             // check for port condition
-            if (! is_null($route->getPort()) && $route->getPort() !== $request->getUri()->getPort()) {
+            if (!is_null($route->getPort()) && $route->getPort() !== $request->getUri()->getPort()) {
                 continue;
             }
             if (is_null($route->getStrategy())) {
                 $route->setStrategy($this->getStrategy());
             }
             $this->addRoute($route);
-        }
-    }
-
-    /**
-     * Build an index of named routes.
-     *
-     * @return void
-     */
-    protected function buildNameIndex()
-    {
-        foreach ($this->routes as $key => $route) {
-            if (! is_null($route->getName())) {
-                unset($this->routes[$key]);
-                $this->namedRoutes[$route->getName()] = $route;
-            }
         }
     }
 
@@ -218,13 +175,68 @@ class Router implements RouteCollection
             // we want to determine if we are technically in a group even if the
             // route is not matched so exceptions are handled correctly
             if (strncmp($activePath, $group->getPrefix(), strlen($group->getPrefix())) === 0
-                && ! is_null($group->getStrategy())
+                && !is_null($group->getStrategy())
             ) {
                 $this->setStrategy($group->getStrategy());
             }
             unset($this->groups[$key]);
             $group();
         }
+    }
+
+    /**
+     * Build an index of named routes.
+     *
+     * @return void
+     */
+    protected function buildNameIndex()
+    {
+        foreach ($this->routes as $key => $route) {
+            if (!is_null($route->getName())) {
+                unset($this->routes[$key]);
+                $this->namedRoutes[$route->getName()] = $route;
+            }
+        }
+    }
+
+    /**
+     * Adds a route to the collection.
+     *
+     * The syntax used in the $route string depends on the used route parser.
+     *
+     * @param string|string[] $httpMethod
+     * @param string          $route
+     * @param mixed           $handler
+     */
+    protected function addRoute(Route $route)
+    {
+        $path = $this->parseRoutePath($route->getPath());
+        $routeDatas = $this->routeParser->parse($path);
+        foreach ($routeDatas as $routeData) {
+            $this->dataGenerator->addRoute($route, $routeData);
+        }
+    }
+
+    /**
+     * Convenience method to convert pre-defined key words in to regex strings.
+     *
+     * @param string $path
+     *
+     * @return string
+     */
+    protected function parseRoutePath($path)
+    {
+        return preg_replace(array_keys($this->patternMatchers), array_values($this->patternMatchers), $path);
+    }
+
+    /**
+     * Returns the collected route data, as provided by the data generator.
+     *
+     * @return array
+     */
+    public function getData()
+    {
+        return $this->dataGenerator->getData();
     }
 
     /**
@@ -255,21 +267,9 @@ class Router implements RouteCollection
      */
     public function addPatternMatcher($alias, $regex)
     {
-        $pattern = '/{(.+?):' . $alias . '}/';
-        $regex   = '{$1:' . $regex . '}';
+        $pattern = '/{(.+?):'.$alias.'}/';
+        $regex = '{$1:'.$regex.'}';
         $this->patternMatchers[$pattern] = $regex;
         return $this;
-    }
-
-    /**
-     * Convenience method to convert pre-defined key words in to regex strings.
-     *
-     * @param string $path
-     *
-     * @return string
-     */
-    protected function parseRoutePath($path)
-    {
-        return preg_replace(array_keys($this->patternMatchers), array_values($this->patternMatchers), $path);
     }
 }

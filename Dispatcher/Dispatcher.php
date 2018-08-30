@@ -7,7 +7,7 @@
  *  @project apli
  *  @file Dispatcher.php
  *  @author Danilo Andrade <danilo@webbingbrasil.com.br>
- *  @date 25/08/18 at 13:40
+ *  @date 27/08/18 at 10:26
  */
 
 /**
@@ -24,8 +24,8 @@ use Apli\Router\Exception\NotFoundException;
 use Apli\Router\MiddlewareTrait;
 use Apli\Router\Route;
 use Apli\Router\StrategyTrait;
-use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 class Dispatcher extends GroupDispatcher implements RequestHandlerInterface
@@ -48,7 +48,7 @@ class Dispatcher extends GroupDispatcher implements RequestHandlerInterface
                 $this->setNotFoundDecoratorMiddleware();
                 break;
             case self::METHOD_NOT_ALLOWED:
-                $allowed = (array) $match[1];
+                $allowed = (array)$match[1];
                 $this->setMethodNotAllowedDecoratorMiddleware($allowed);
                 break;
             case self::FOUND:
@@ -58,45 +58,6 @@ class Dispatcher extends GroupDispatcher implements RequestHandlerInterface
         }
 
         return $this->handle($request);
-    }
-
-    /**
-     * @param ServerRequestInterface $request
-     * @return ResponseInterface
-     */
-    public function handle(ServerRequestInterface $request) : ResponseInterface
-    {
-        $middleware = $this->shiftMiddleware();
-
-        if (is_null($middleware)) {
-            throw new OutOfBoundsException('Reached end of middleware stack. Does your controller return a response?');
-        }
-
-        return $middleware->process($request, $this);
-    }
-
-    /**
-     * Handle dispatching of a found route.
-     *
-     * @param Route $route
-     *
-     * @return void
-     */
-    protected function setFoundMiddleware(Route $route)
-    {
-        if (! is_null($route->getStrategy())) {
-            $route->setStrategy($this->getStrategy());
-        }
-
-        // wrap entire dispatch process in exception handler
-        $this->prependMiddleware($route->getStrategy()->getExceptionHandler());
-        // add group and route specific niddlewares
-        if ($group = $route->getParentGroup()) {
-            $this->middlewares($group->getMiddlewareStack());
-        }
-        $this->middlewares($route->getMiddlewareStack());
-        // add actual route to end of stack
-        $this->middleware($route);
     }
 
     /**
@@ -123,5 +84,44 @@ class Dispatcher extends GroupDispatcher implements RequestHandlerInterface
             new MethodNotAllowedException($allowed)
         );
         $this->prependMiddleware($middleware);
+    }
+
+    /**
+     * Handle dispatching of a found route.
+     *
+     * @param Route $route
+     *
+     * @return void
+     */
+    protected function setFoundMiddleware(Route $route)
+    {
+        if (!is_null($route->getStrategy())) {
+            $route->setStrategy($this->getStrategy());
+        }
+
+        // wrap entire dispatch process in exception handler
+        $this->prependMiddleware($route->getStrategy()->getExceptionHandler());
+        // add group and route specific niddlewares
+        if ($group = $route->getParentGroup()) {
+            $this->middlewares($group->getMiddlewareStack());
+        }
+        $this->middlewares($route->getMiddlewareStack());
+        // add actual route to end of stack
+        $this->middleware($route);
+    }
+
+    /**
+     * @param ServerRequestInterface $request
+     * @return ResponseInterface
+     */
+    public function handle(ServerRequestInterface $request): ResponseInterface
+    {
+        $middleware = $this->shiftMiddleware();
+
+        if (is_null($middleware)) {
+            throw new OutOfBoundsException('Reached end of middleware stack. Does your controller return a response?');
+        }
+
+        return $middleware->process($request, $this);
     }
 }

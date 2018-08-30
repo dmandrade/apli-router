@@ -7,7 +7,7 @@
  *  @project apli
  *  @file RouteCollection.php
  *  @author Danilo Andrade <danilo@webbingbrasil.com.br>
- *  @date 25/08/18 at 13:33
+ *  @date 27/08/18 at 10:26
  */
 
 /**
@@ -35,6 +35,7 @@ interface RouteCollection
      * @return Route
      */
     public function map($method, $path, $handler);
+
     /**
      * Add a route that responds to GET HTTP method.
      *

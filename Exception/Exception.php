@@ -7,7 +7,7 @@
  *  @project apli
  *  @file Exception.php
  *  @author Danilo Andrade <danilo@webbingbrasil.com.br>
- *  @date 25/08/18 at 14:27
+ *  @date 27/08/18 at 10:26
  */
 
 /**
@@ -52,12 +52,13 @@ class Exception extends \Exception implements HttpException
         $status,
         $message = null,
         \Exception $previous = null,
-        array      $headers = [],
-                $code = 0
-    ) {
+        array $headers = [],
+        $code = 0
+    )
+    {
         $this->headers = $headers;
         $this->message = $message;
-        $this->status  = $status;
+        $this->status = $status;
         parent::__construct($message, $code, $previous);
     }
 
@@ -89,7 +90,7 @@ class Exception extends \Exception implements HttpException
         }
         if ($response->getBody()->isWritable()) {
             $response->getBody()->write(json_encode([
-                'status_code'   => $this->status,
+                'status_code' => $this->status,
                 'reason_phrase' => $this->message
             ]));
         }

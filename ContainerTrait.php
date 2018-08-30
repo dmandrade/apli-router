@@ -7,7 +7,7 @@
  *  @project apli
  *  @file ContainerTrait.php
  *  @author Danilo Andrade <danilo@webbingbrasil.com.br>
- *  @date 25/08/18 at 14:42
+ *  @date 27/08/18 at 10:26
  */
 
 /**
@@ -28,6 +28,7 @@ trait ContainerTrait
      * @var \Psr\Container\ContainerInterface
      */
     protected $container;
+
     /**
      * Get container.
      *
@@ -37,6 +38,7 @@ trait ContainerTrait
     {
         return $this->container;
     }
+
     /**
      * Set container.
      *

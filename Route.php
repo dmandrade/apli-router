@@ -7,7 +7,7 @@
  *  @project apli
  *  @file Route.php
  *  @author Danilo Andrade <danilo@webbingbrasil.com.br>
- *  @date 25/08/18 at 13:05
+ *  @date 27/08/18 at 10:26
  */
 
 /**
@@ -72,8 +72,8 @@ class Route implements MiddlewareInterface
      */
     public function __construct($method, $path, $handler)
     {
-        $this->method  = $method;
-        $this->path    = $path;
+        $this->method = $method;
+        $this->path = $path;
         $this->handler = $handler;
     }
 
@@ -118,8 +118,8 @@ class Route implements MiddlewareInterface
      */
     public function matches($str)
     {
-        $regex = '~^' . $this->regex . '$~';
-        return (bool) preg_match($regex, $str);
+        $regex = '~^'.$this->regex.'$~';
+        return (bool)preg_match($regex, $str);
     }
 
     /**
@@ -127,7 +127,8 @@ class Route implements MiddlewareInterface
      * @param RequestHandlerInterface $requestHandler
      * @return ResponseInterface
      */
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $requestHandler) : ResponseInterface {
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $requestHandler): ResponseInterface
+    {
         return $this->getStrategy()->invokeRouteCallable($this, $request);
     }
 
@@ -150,19 +151,17 @@ class Route implements MiddlewareInterface
             $callable = [$callable[0], $callable[1]];
         }
         if (is_array($callable) && isset($callable[0]) && is_string($callable[0])) {
-            $class = (! is_null($container) && $container->has($callable[0]))
+            $class = (!is_null($container) && $container->has($callable[0]))
                 ? $container->get($callable[0])
-                : new $callable[0]
-            ;
+                : new $callable[0];
             $callable = [$class, $callable[1]];
         }
         if (is_string($callable) && method_exists($callable, '__invoke')) {
-            $callable = (! is_null($container) && $container->has($callable))
+            $callable = (!is_null($container) && $container->has($callable))
                 ? $container->get($callable)
-                : new $callable
-            ;
+                : new $callable;
         }
-        if (! is_callable($callable)) {
+        if (!is_callable($callable)) {
             throw new InvalidArgumentException('Could not resolve a callable for this route');
         }
         return $callable;

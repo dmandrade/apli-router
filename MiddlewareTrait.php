@@ -5,9 +5,9 @@
  *  This file is part of the apli project.
  *
  *  @project apli
- *  @file MiddlewareAwareTrait.php
+ *  @file MiddlewareTrait.php
  *  @author Danilo Andrade <danilo@webbingbrasil.com.br>
- *  @date 25/08/18 at 15:24
+ *  @date 27/08/18 at 10:26
  */
 
 /**
@@ -30,16 +30,6 @@ trait MiddlewareTrait
     protected $middleware = [];
 
     /**
-     * @param MiddlewareInterface $middleware
-     * @return self
-     */
-    public function middleware(MiddlewareInterface $middleware)
-    {
-        $this->middleware[] = $middleware;
-        return $this;
-    }
-
-    /**
      * @param array $middlewares
      * @return self
      */
@@ -48,6 +38,16 @@ trait MiddlewareTrait
         foreach ($middlewares as $middleware) {
             $this->middleware($middleware);
         }
+        return $this;
+    }
+
+    /**
+     * @param MiddlewareInterface $middleware
+     * @return self
+     */
+    public function middleware(MiddlewareInterface $middleware)
+    {
+        $this->middleware[] = $middleware;
         return $this;
     }
 

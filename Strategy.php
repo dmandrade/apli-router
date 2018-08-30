@@ -7,7 +7,7 @@
  *  @project apli
  *  @file Strategy.php
  *  @author Danilo Andrade <danilo@webbingbrasil.com.br>
- *  @date 25/08/18 at 18:05
+ *  @date 27/08/18 at 10:26
  */
 
 /**
@@ -23,8 +23,6 @@ use Apli\Router\Exception\MethodNotAllowedException;
 use Apli\Router\Exception\NotFoundException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\MiddlewareInterface;
-use Apli\Router\Route;
 
 /**
  * Interface Strategy
@@ -36,7 +34,7 @@ interface Strategy
     /**
      * Invoke the route callable based on the strategy.
      *
-     * @param Route                      $route
+     * @param Route                  $route
      * @param ServerRequestInterface $request
      *
      * @return ResponseInterface

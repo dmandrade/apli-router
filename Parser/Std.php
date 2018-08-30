@@ -7,7 +7,7 @@
  *  @project apli
  *  @file Std.php
  *  @author Danilo Andrade <danilo@webbingbrasil.com.br>
- *  @date 25/08/18 at 14:03
+ *  @date 27/08/18 at 10:26
  */
 
 /**
@@ -16,6 +16,7 @@
  * Date: 25/08/2018
  * Time: 14:03
  */
+
 namespace Apli\Router\Parser;
 
 use Apli\Router\RouteParser;
@@ -43,10 +44,10 @@ REGEX;
         $routeWithoutClosingOptionals = rtrim($route, ']');
         $numOptionals = strlen($route) - strlen($routeWithoutClosingOptionals);
         // Split on [ while skipping placeholders
-        $segments = preg_split('~' . self::VARIABLE_REGEX . '(*SKIP)(*F) | \[~x', $routeWithoutClosingOptionals);
+        $segments = preg_split('~'.self::VARIABLE_REGEX.'(*SKIP)(*F) | \[~x', $routeWithoutClosingOptionals);
         if ($numOptionals !== count($segments) - 1) {
             // If there are any ] in the middle of the route, throw a more specific error message
-            if (preg_match('~' . self::VARIABLE_REGEX . '(*SKIP)(*F) | \]~x', $routeWithoutClosingOptionals)) {
+            if (preg_match('~'.self::VARIABLE_REGEX.'(*SKIP)(*F) | \]~x', $routeWithoutClosingOptionals)) {
                 throw new BadRouteException('Optional segments can only occur at the end of a route');
             }
             throw new BadRouteException("Number of opening '[' and closing ']' does not match");
@@ -72,7 +73,7 @@ REGEX;
     private function parsePlaceholders($route)
     {
         if (!preg_match_all(
-            '~' . self::VARIABLE_REGEX . '~x', $route, $matches,
+            '~'.self::VARIABLE_REGEX.'~x', $route, $matches,
             PREG_OFFSET_CAPTURE | PREG_SET_ORDER
         )) {
             return [$route];

@@ -7,7 +7,7 @@
  *  @project apli
  *  @file RouteCollectionTrait.php
  *  @author Danilo Andrade <danilo@webbingbrasil.com.br>
- *  @date 25/08/18 at 14:15
+ *  @date 27/08/18 at 10:26
  */
 
 /**
@@ -111,7 +111,7 @@ trait RouteCollectionTrait
     {
         return $this->map('HEAD', $path, $handler);
     }
-    
+
     /**
      * Add a route that responds to OPTIONS HTTP method.
      *
