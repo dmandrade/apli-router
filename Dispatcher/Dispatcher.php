@@ -114,7 +114,7 @@ class Dispatcher extends GroupDispatcher implements RequestHandlerInterface
      * @param ServerRequestInterface $request
      * @return ResponseInterface
      */
-    public function handle(ServerRequestInterface $request): ResponseInterface
+    public function handle(ServerRequestInterface $request)
     {
         $middleware = $this->shiftMiddleware();
 

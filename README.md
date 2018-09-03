@@ -1,6 +1,9 @@
 # Aplí Router
        
-Aplí Router package provides a simple interface to manage session data.
+Aplí Router package is a fast PSR-7 routing component.
+
+> Some parts of this package is based on [nikic/fast-route](https://github.com/nikic/FastRoute)
+
 
 ## Installation via Composer
 
