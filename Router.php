@@ -19,13 +19,13 @@
 
 namespace Apli\Router;
 
+use Apli\Http\Message\Response;
+use Apli\Http\Message\ServerRequest;
 use Apli\Router\DataGenerator\GroupGenerator;
 use Apli\Router\Dispatcher\Dispatcher;
 use Apli\Router\Parser\Std;
 use Apli\Router\Strategy\ApplicationStrategy;
 use InvalidArgumentException;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
 
 class Router implements RouteCollection
 {
@@ -109,10 +109,10 @@ class Router implements RouteCollection
     }
 
     /**
-     * @param ServerRequestInterface $request
-     * @return ResponseInterface
+     * @param ServerRequest $request
+     * @return Response
      */
-    public function dispatch(ServerRequestInterface $request)
+    public function dispatch(ServerRequest $request)
     {
         if (is_null($this->getStrategy())) {
             $this->setStrategy(new ApplicationStrategy());
@@ -129,11 +129,11 @@ class Router implements RouteCollection
      * Prepare all routes, build name index and filter out none matching
      * routes before being passed off to the parser.
      *
-     * @param ServerRequestInterface $request
+     * @param ServerRequest $request
      *
      * @return void
      */
-    protected function prepRoutes(ServerRequestInterface $request)
+    protected function prepRoutes(ServerRequest $request)
     {
         $this->processGroups($request);
         $this->buildNameIndex();
@@ -164,11 +164,11 @@ class Router implements RouteCollection
     /**
      * Process all groups, and determine if we are using a group's strategy.
      *
-     * @param ServerRequestInterface $request
+     * @param ServerRequest $request
      *
      * @return void
      */
-    protected function processGroups(ServerRequestInterface $request)
+    protected function processGroups(ServerRequest $request)
     {
         $activePath = $request->getUri()->getPath();
         foreach ($this->groups as $key => $group) {

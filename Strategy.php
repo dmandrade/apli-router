@@ -19,10 +19,11 @@
 
 namespace Apli\Router;
 
+use Apli\Http\Message\Response;
+use Apli\Http\Message\ServerRequest;
+use Apli\Http\Server\Middleware;
 use Apli\Router\Exception\MethodNotAllowedException;
 use Apli\Router\Exception\NotFoundException;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Interface Strategy
@@ -35,18 +36,18 @@ interface Strategy
      * Invoke the route callable based on the strategy.
      *
      * @param Route                  $route
-     * @param ServerRequestInterface $request
+     * @param ServerRequest $request
      *
-     * @return ResponseInterface
+     * @return Response
      */
-    public function invokeRouteCallable(Route $route, ServerRequestInterface $request);
+    public function invokeRouteCallable(Route $route, ServerRequest $request);
 
     /**
      * Get a middleware that will decorate a NotFoundException
      *
      * @param NotFoundException $exception
      *
-     * @return \Psr\Http\Server\MiddlewareInterface
+     * @return Middleware
      */
     public function getNotFoundDecorator(NotFoundException $exception);
 
@@ -55,7 +56,7 @@ interface Strategy
      *
      * @param MethodNotAllowedException $exception
      *
-     * @return \Psr\Http\Server\MiddlewareInterface
+     * @return Middleware
      */
     public function getMethodNotAllowedDecorator(MethodNotAllowedException $exception);
 
@@ -63,7 +64,7 @@ interface Strategy
      * Get a middleware that acts as an exception handler, it should wrap the rest of the
      * middleware stack and catch eny exceptions.
      *
-     * @return \Psr\Http\Server\MiddlewareInterface
+     * @return Middleware
      */
     public function getExceptionHandler();
 }

@@ -19,7 +19,7 @@
 
 namespace Apli\Router;
 
-use Psr\Http\Message\ResponseInterface;
+use Apli\Http\Message\Response;
 
 interface HttpException
 {
@@ -41,9 +41,9 @@ interface HttpException
     /**
      * Accepts a response object and builds it in to a json representation of the exception.
      *
-     * @param  \Psr\Http\Message\ResponseInterface $response
+     * @param  Response $response
      *
-     * @return \Psr\Http\Message\ResponseInterface
+     * @return Response
      */
-    public function buildJsonResponse(ResponseInterface $response);
+    public function buildJsonResponse(Response $response);
 }

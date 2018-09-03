@@ -19,27 +19,27 @@
 
 namespace Apli\Router\Dispatcher;
 
+use Apli\Http\Message\Response;
+use Apli\Http\Message\ServerRequest;
+use Apli\Http\Server\RequestHandler;
 use Apli\Router\Exception\MethodNotAllowedException;
 use Apli\Router\Exception\NotFoundException;
 use Apli\Router\MiddlewareTrait;
 use Apli\Router\Route;
 use Apli\Router\StrategyTrait;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\RequestHandlerInterface;
 
-class Dispatcher extends GroupDispatcher implements RequestHandlerInterface
+class Dispatcher extends GroupDispatcher implements RequestHandler
 {
     use StrategyTrait, MiddlewareTrait;
 
     /**
      * Dispatch the current route.
      *
-     * @param ServerRequestInterface $request
+     * @param ServerRequest $request
      *
-     * @return ResponseInterface
+     * @return Response
      */
-    public function dispatchRequest(ServerRequestInterface $request)
+    public function dispatchRequest(ServerRequest $request)
     {
         $match = $this->dispatch($request->getMethod(), $request->getUri()->getPath());
 
@@ -111,10 +111,10 @@ class Dispatcher extends GroupDispatcher implements RequestHandlerInterface
     }
 
     /**
-     * @param ServerRequestInterface $request
-     * @return ResponseInterface
+     * @param ServerRequest $request
+     * @return Response
      */
-    public function handle(ServerRequestInterface $request)
+    public function handle(ServerRequest $request)
     {
         $middleware = $this->shiftMiddleware();
 

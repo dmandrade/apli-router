@@ -19,42 +19,43 @@
 
 namespace Apli\Router\Strategy;
 
+use Apli\Http\Message\Response;
+use Apli\Http\Message\ResponseFactory;
+use Apli\Http\Message\ServerRequest;
+use Apli\Http\Server\Middleware;
+use Apli\Http\Server\RequestHandler;
 use Apli\Router\ContainerTrait;
 use Apli\Router\Exception\MethodNotAllowedException;
 use Apli\Router\Exception\NotFoundException;
 use Apli\Router\HttpException;
 use Apli\Router\Route;
 use Apli\Router\Strategy;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\MiddlewareInterface;
-use Psr\Http\Server\RequestHandlerInterface;
 
 class JsonStrategy implements Strategy
 {
     use ContainerTrait;
 
     /**
-     * @var \Psr\Http\Message\ResponseInterface
+     * @var ResponseFactory
      */
     protected $responseFactory;
 
     /**
      * Construct.
      *
-     * @param \Psr\Http\Message\ResponseInterface $responseFactory
+     * @param ResponseFactory $responseFactory
      */
-    public function __construct(ResponseInterface $responseFactory)
+    public function __construct(ResponseFactory $responseFactory)
     {
         $this->responseFactory = $responseFactory;
     }
 
     /**
      * @param Route                  $route
-     * @param ServerRequestInterface $request
-     * @return ResponseInterface
+     * @param ServerRequest $request
+     * @return Response
      */
-    public function invokeRouteCallable(Route $route, ServerRequestInterface $request)
+    public function invokeRouteCallable(Route $route, ServerRequest $request)
     {
         $response = call_user_func_array($route->getCallable($this->getContainer()), [$request, $route->getVars()]);
         if (is_array($response)) {
@@ -63,7 +64,7 @@ class JsonStrategy implements Strategy
             $response = $response->withStatus(200);
             $response->getBody()->write($body);
         }
-        if ($response instanceof ResponseInterface && !$response->hasHeader('content-type')) {
+        if ($response instanceof Response && !$response->hasHeader('content-type')) {
             $response = $response->withAddedHeader('content-type', 'application/json');
         }
         return $response;
@@ -71,7 +72,7 @@ class JsonStrategy implements Strategy
 
     /**
      * @param NotFoundException $exception
-     * @return MiddlewareInterface
+     * @return Middleware
      */
     public function getNotFoundDecorator(NotFoundException $exception)
     {
@@ -83,25 +84,25 @@ class JsonStrategy implements Strategy
      *
      * @param \Exception $exception
      *
-     * @return \Psr\Http\Server\MiddlewareInterface
+     * @return Middleware
      */
     protected function buildJsonResponseMiddleware(HttpException $exception)
     {
-        return new class($this->responseFactory->createResponse(), $exception) implements MiddlewareInterface
+        return new class($this->responseFactory->createResponse(), $exception) implements Middleware
         {
             protected $response;
             protected $exception;
 
-            public function __construct(ResponseInterface $response, HttpException $exception)
+            public function __construct(Response $response, HttpException $exception)
             {
                 $this->response = $response;
                 $this->exception = $exception;
             }
 
             public function process(
-                ServerRequestInterface $request,
-                RequestHandlerInterface $requestHandler
-            ): ResponseInterface
+                ServerRequest $request,
+                RequestHandler $requestHandler
+            )
             {
                 return $this->exception->buildJsonResponse($this->response);
             }
@@ -110,7 +111,7 @@ class JsonStrategy implements Strategy
 
     /**
      * @param MethodNotAllowedException $exception
-     * @return MiddlewareInterface
+     * @return Middleware
      */
     public function getMethodNotAllowedDecorator(MethodNotAllowedException $exception)
     {
@@ -118,23 +119,23 @@ class JsonStrategy implements Strategy
     }
 
     /**
-     * @return MiddlewareInterface
+     * @return Middleware
      */
     public function getExceptionHandler()
     {
-        return new class($this->responseFactory->createResponse()) implements MiddlewareInterface
+        return new class($this->responseFactory->createResponse()) implements Middleware
         {
             protected $response;
 
-            public function __construct(ResponseInterface $response)
+            public function __construct(Response $response)
             {
                 $this->response = $response;
             }
 
             public function process(
-                ServerRequestInterface $request,
-                RequestHandlerInterface $requestHandler
-            ): ResponseInterface
+                ServerRequest $request,
+                RequestHandler $requestHandler
+            )
             {
                 try {
                     return $requestHandler->handle($request);

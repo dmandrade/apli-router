@@ -19,13 +19,13 @@
 
 namespace Apli\Router;
 
-use Psr\Http\Server\MiddlewareInterface;
+use Apli\Http\Server\Middleware;
 
 trait MiddlewareTrait
 {
 
     /**
-     * @var \Psr\Http\Server\MiddlewareInterface[]
+     * @var Middleware[]
      */
     protected $middleware = [];
 
@@ -42,27 +42,27 @@ trait MiddlewareTrait
     }
 
     /**
-     * @param MiddlewareInterface $middleware
+     * @param Middleware $middleware
      * @return self
      */
-    public function middleware(MiddlewareInterface $middleware)
+    public function middleware(Middleware $middleware)
     {
         $this->middleware[] = $middleware;
         return $this;
     }
 
     /**
-     * @param MiddlewareInterface $middleware
+     * @param Middleware $middleware
      * @return self
      */
-    public function prependMiddleware(MiddlewareInterface $middleware)
+    public function prependMiddleware(Middleware $middleware)
     {
         array_unshift($this->middleware, $middleware);
         return $this;
     }
 
     /**
-     * @return MiddlewareInterface
+     * @return Middleware
      */
     public function shiftMiddleware()
     {

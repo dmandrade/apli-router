@@ -19,16 +19,16 @@
 
 namespace Apli\Router\Strategy;
 
+use Apli\Http\Message\Response;
+use Apli\Http\Message\ServerRequest;
+use Apli\Http\Server\Middleware;
+use Apli\Http\Server\RequestHandler;
 use Apli\Router\ContainerTrait;
 use Apli\Router\Exception\Exception;
 use Apli\Router\Exception\MethodNotAllowedException;
 use Apli\Router\Exception\NotFoundException;
 use Apli\Router\Route;
 use Apli\Router\Strategy;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\MiddlewareInterface;
-use Psr\Http\Server\RequestHandlerInterface;
 
 class ApplicationStrategy implements Strategy
 {
@@ -36,17 +36,17 @@ class ApplicationStrategy implements Strategy
 
     /**
      * @param Route                  $route
-     * @param ServerRequestInterface $request
-     * @return ResponseInterface
+     * @param ServerRequest $request
+     * @return Response
      */
-    public function invokeRouteCallable(Route $route, ServerRequestInterface $request)
+    public function invokeRouteCallable(Route $route, ServerRequest $request)
     {
         return call_user_func_array($route->getCallable($this->getContainer()), [$request, $route->getVars()]);
     }
 
     /**
      * @param NotFoundException $exception
-     * @return MiddlewareInterface
+     * @return Middleware
      */
     public function getNotFoundDecorator(NotFoundException $exception)
     {
@@ -58,11 +58,11 @@ class ApplicationStrategy implements Strategy
      *
      * @param \Exception $exception
      *
-     * @return \Psr\Http\Server\MiddlewareInterface
+     * @return Middleware
      */
     protected function throwExceptionMiddleware(Exception $exception)
     {
-        return new class($exception) implements MiddlewareInterface
+        return new class($exception) implements Middleware
         {
             protected $exception;
 
@@ -72,14 +72,14 @@ class ApplicationStrategy implements Strategy
             }
 
             /**
-             * @param ServerRequestInterface  $request
-             * @param RequestHandlerInterface $requestHandler
-             * @return ResponseInterface
+             * @param ServerRequest $request
+             * @param RequestHandler $requestHandler
+             * @return Response
              */
             public function process(
-                ServerRequestInterface $request,
-                RequestHandlerInterface $requestHandler
-            ): ResponseInterface
+                ServerRequest $request,
+                RequestHandler $requestHandler
+            )
             {
                 throw $this->exception;
             }
@@ -88,7 +88,7 @@ class ApplicationStrategy implements Strategy
 
     /**
      * @param MethodNotAllowedException $exception
-     * @return MiddlewareInterface
+     * @return Middleware
      */
     public function getMethodNotAllowedDecorator(MethodNotAllowedException $exception)
     {
@@ -96,21 +96,21 @@ class ApplicationStrategy implements Strategy
     }
 
     /**
-     * @return MiddlewareInterface
+     * @return Middleware
      */
     public function getExceptionHandler()
     {
-        return new class implements MiddlewareInterface
+        return new class implements Middleware
         {
             /**
-             * @param ServerRequestInterface  $request
-             * @param RequestHandlerInterface $requestHandler
-             * @return ResponseInterface
+             * @param ServerRequest  $request
+             * @param RequestHandler $requestHandler
+             * @return Response
              */
             public function process(
-                ServerRequestInterface $request,
-                RequestHandlerInterface $requestHandler
-            ): ResponseInterface
+                ServerRequest $request,
+                RequestHandler $requestHandler
+            )
             {
                 try {
                     return $requestHandler->handle($request);
