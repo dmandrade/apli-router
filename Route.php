@@ -19,11 +19,11 @@
 
 namespace Apli\Router;
 
+use Apli\DI\Container;
 use Apli\Http\Message\Response;
 use Apli\Http\Message\ServerRequest;
 use Apli\Http\Server\Middleware;
 use Apli\Http\Server\RequestHandler;
-use Psr\Container\ContainerInterface;
 
 class Route implements Middleware
 {
@@ -135,13 +135,11 @@ class Route implements Middleware
     /**
      * Get the callable.
      *
-     * @param ContainerInterface $container
-     *
-     * @throws \RuntimeException
-     *
-     * @return callable
+     * @param Container|null $container
+     * @return array|callable|mixed|string
+     * @throws \Apli\DI\NotFoundException
      */
-    public function getCallable(ContainerInterface $container = null)
+    public function getCallable(Container $container = null)
     {
         $callable = $this->handler;
         if (is_string($callable) && strpos($callable, '::') !== false) {
