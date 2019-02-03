@@ -21,8 +21,9 @@ namespace Apli\Router\Exception;
 
 use Apli\Router\Exception\Exception as HttpException;
 use Exception;
+use Psr\Container\NotFoundExceptionInterface;
 
-class NotFoundException extends HttpException
+class NotFoundException extends HttpException implements NotFoundExceptionInterface
 {
     /**
      * Constructor

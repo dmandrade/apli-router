@@ -24,12 +24,13 @@ use Apli\Router\Exception\MethodNotAllowedException;
 use Apli\Router\Exception\NotFoundException;
 use Apli\Router\Route;
 use Apli\Router\StrategyInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-class ApplicationStrategy extends AbstractStrategy implements StrategyInterface
+class ApplicationStrategy extends AbstractStrategy
 {
     use ContainerTrait;
 
@@ -37,7 +38,7 @@ class ApplicationStrategy extends AbstractStrategy implements StrategyInterface
      * @param Route                  $route
      * @param ServerRequestInterface $request
      * @return ResponseInterface
-     * @throws \Apli\DI\NotFoundException
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function invokeRouteCallable(Route $route, ServerRequestInterface $request)
     {
@@ -50,10 +51,10 @@ class ApplicationStrategy extends AbstractStrategy implements StrategyInterface
     }
 
     /**
-     * @param NotFoundException $exception
+     * @param \Psr\Container\NotFoundExceptionInterface $exception
      * @return MiddlewareInterface|RequestHandlerInterface
      */
-    public function getNotFoundDecorator(NotFoundException $exception)
+    public function getNotFoundDecorator(NotFoundExceptionInterface $exception)
     {
         return $this->throwExceptionMiddleware($exception);
     }

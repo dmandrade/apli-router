@@ -19,7 +19,7 @@
 
 namespace Apli\Router;
 
-use Apli\DI\Container;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -135,11 +135,11 @@ class Route implements MiddlewareInterface
     /**
      * Get the callable.
      *
-     * @param Container|null $container
+     * @param ContainerInterface|null $container
      * @return array|callable|mixed|string
-     * @throws \Apli\DI\NotFoundException
+     * @throws \PSNotFoundExceptionInterface
      */
-    public function getCallable(Container $container = null)
+    public function getCallable(ContainerInterface $container = null)
     {
         $callable = $this->handler;
         if (is_string($callable) && strpos($callable, '::') !== false) {

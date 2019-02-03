@@ -19,20 +19,20 @@
 
 namespace Apli\Router;
 
-use Apli\DI\Container;
+use Psr\Container\ContainerInterface;
 
 trait ContainerTrait
 {
 
     /**
-     * @var Container
+     * @var ContainerInterface
      */
     protected $container;
 
     /**
      * Get container.
      *
-     * @return Container
+     * @return ContainerInterface
      */
     public function getContainer()
     {
@@ -42,11 +42,11 @@ trait ContainerTrait
     /**
      * Set container.
      *
-     * @param Container $container
+     * @param ContainerInterface $container
      *
      * @return self
      */
-    public function setContainer(Container $container)
+    public function setContainer(ContainerInterface $container)
     {
         $this->container = $container;
         return $this;

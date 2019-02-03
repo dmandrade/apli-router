@@ -20,7 +20,7 @@
 namespace Apli\Router;
 
 use Apli\Router\Exception\MethodNotAllowedException;
-use Apli\Router\Exception\NotFoundException;
+use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -45,11 +45,11 @@ interface StrategyInterface
     /**
      * Get a middleware that will decorate a NotFoundException
      *
-     * @param NotFoundException $exception
+     * @param NotFoundExceptionInterface $exception
      *
      * @return MiddlewareInterface
      */
-    public function getNotFoundDecorator(NotFoundException $exception);
+    public function getNotFoundDecorator(NotFoundExceptionInterface $exception);
 
     /**
      * Get a middleware that will decorate a NotAllowedException

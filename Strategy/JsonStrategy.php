@@ -56,7 +56,7 @@ class JsonStrategy extends AbstractStrategy implements StrategyInterface
      * @param Route                  $route
      * @param ServerRequestInterface $request
      * @return mixed|ResponseInterface
-     * @throws \Apli\DI\NotFoundException
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function invokeRouteCallable(Route $route, ServerRequestInterface $request)
     {
