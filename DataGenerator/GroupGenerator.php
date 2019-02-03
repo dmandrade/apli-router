@@ -19,7 +19,6 @@
 
 namespace Apli\Router\DataGenerator;
 
-
 use Apli\Router\Route;
 
 class GroupGenerator extends AbstractGenerator

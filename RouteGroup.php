@@ -22,7 +22,7 @@ class RouteGroup
     protected $callback;
 
     /**
-     * @var RouteCollection
+     * @var RouteCollectionInterface
      */
     protected $collection;
 
@@ -34,11 +34,11 @@ class RouteGroup
     /**
      * Constructor.
      *
-     * @param string          $prefix
-     * @param callable        $callback
-     * @param RouteCollection $collection
+     * @param string                   $prefix
+     * @param callable                 $callback
+     * @param RouteCollectionInterface $collection
      */
-    public function __construct($prefix, callable $callback, RouteCollection $collection)
+    public function __construct($prefix, callable $callback, RouteCollectionInterface $collection)
     {
         $this->callback = $callback;
         $this->collection = $collection;

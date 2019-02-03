@@ -20,12 +20,12 @@
 namespace Apli\Router;
 
 use Apli\DI\Container;
-use Apli\Http\Message\Response;
-use Apli\Http\Message\ServerRequest;
-use Apli\Http\Server\Middleware;
-use Apli\Http\Server\RequestHandler;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
-class Route implements Middleware
+class Route implements MiddlewareInterface
 {
     use StrategyTrait, RouteConditionHandlerTrait, MiddlewareTrait;
 
@@ -123,11 +123,11 @@ class Route implements Middleware
     }
 
     /**
-     * @param ServerRequest  $request
-     * @param RequestHandler $requestHandler
-     * @return Response
+     * @param ServerRequestInterface  $request
+     * @param RequestHandlerInterface $handler
+     * @return ResponseInterface
      */
-    public function process(ServerRequest $request, RequestHandler $requestHandler)
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         return $this->getStrategy()->invokeRouteCallable($this, $request);
     }

@@ -20,7 +20,7 @@
 namespace Apli\Router;
 
 
-interface Dispatcher
+interface DispatcherInterface
 {
     const NOT_FOUND = 0;
     const FOUND = 1;

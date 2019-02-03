@@ -19,9 +19,9 @@
 
 namespace Apli\Router\Dispatcher;
 
-use Apli\Router\Dispatcher;
+use Apli\Router\DispatcherInterface;
 
-abstract class AbstractDispatcher implements Dispatcher
+abstract class AbstractDispatcher implements DispatcherInterface
 {
 
     /** @var mixed[][] */

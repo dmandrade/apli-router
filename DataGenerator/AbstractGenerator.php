@@ -19,10 +19,10 @@
 
 namespace Apli\Router\DataGenerator;
 
-use Apli\Router\DataGenerator;
+use Apli\Router\DataGeneratorInterface;
 use Apli\Router\Route;
 
-abstract class AbstractGenerator implements DataGenerator
+abstract class AbstractGenerator implements DataGeneratorInterface
 {
     /** @var mixed[][] */
     protected $staticRoutes = [];

@@ -19,25 +19,25 @@
 
 namespace Apli\Router;
 
-use Apli\Http\Message\Response;
-use Apli\Http\Message\ServerRequest;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Apli\Router\DataGenerator\GroupGenerator;
 use Apli\Router\Dispatcher\Dispatcher;
 use Apli\Router\Parser\Std;
 use Apli\Router\Strategy\ApplicationStrategy;
 use InvalidArgumentException;
 
-class Router implements RouteCollection
+class Router implements RouteCollectionInterface
 {
     use StrategyTrait, RouteCollectionTrait;
 
     /**
-     * @var RouteParser
+     * @var RouteParserInterface
      */
     protected $routeParser;
 
     /**
-     * @var DataGenerator
+     * @var DataGeneratorInterface
      */
     protected $dataGenerator;
 
@@ -70,10 +70,10 @@ class Router implements RouteCollection
     /**
      * Constructs a route collector.
      *
-     * @param RouteParser   $routeParser
-     * @param DataGenerator $dataGenerator
+     * @param RouteParserInterface   $routeParser
+     * @param DataGeneratorInterface $dataGenerator
      */
-    public function __construct(RouteParser $routeParser = null, DataGenerator $dataGenerator = null)
+    public function __construct(RouteParserInterface $routeParser = null, DataGeneratorInterface $dataGenerator = null)
     {
         $this->routeParser = is_null($routeParser) ? new Std() : $routeParser;
         $this->dataGenerator = is_null($dataGenerator) ? new GroupGenerator() : $dataGenerator;
@@ -109,10 +109,10 @@ class Router implements RouteCollection
     }
 
     /**
-     * @param ServerRequest $request
-     * @return Response
+     * @param ServerRequestInterface $request
+     * @return ResponseInterface
      */
-    public function dispatch(ServerRequest $request)
+    public function dispatch(ServerRequestInterface $request)
     {
         if (is_null($this->getStrategy())) {
             $this->setStrategy(new ApplicationStrategy());
@@ -129,11 +129,11 @@ class Router implements RouteCollection
      * Prepare all routes, build name index and filter out none matching
      * routes before being passed off to the parser.
      *
-     * @param ServerRequest $request
+     * @param ServerRequestInterface $request
      *
      * @return void
      */
-    protected function prepRoutes(ServerRequest $request)
+    protected function prepRoutes(ServerRequestInterface $request)
     {
         $this->processGroups($request);
         $this->buildNameIndex();
@@ -164,11 +164,11 @@ class Router implements RouteCollection
     /**
      * Process all groups, and determine if we are using a group's strategy.
      *
-     * @param ServerRequest $request
+     * @param ServerRequestInterface $request
      *
      * @return void
      */
-    protected function processGroups(ServerRequest $request)
+    protected function processGroups(ServerRequestInterface $request)
     {
         $activePath = $request->getUri()->getPath();
         foreach ($this->groups as $key => $group) {

@@ -20,7 +20,7 @@
 namespace Apli\Router;
 
 
-interface RouteParser
+interface RouteParserInterface
 {
 
     /**

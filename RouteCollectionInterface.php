@@ -23,7 +23,7 @@ namespace Apli\Router;
  * Interface RouteCollection
  * @package Apli\Router
  */
-interface RouteCollection
+interface RouteCollectionInterface
 {
     /**
      * Add a route to the map.

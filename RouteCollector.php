@@ -41,9 +41,9 @@ class RouteCollector
     /**
      * Constructor.
      *
-     * @param string          $prefix
-     * @param callable        $callback
-     * @param RouteCollection $collection
+     * @param string                   $prefix
+     * @param callable                 $callback
+     * @param RouteCollectionInterface $collection
      */
     public function __construct(string $prefix, callable $callback, RouteCollectionInterface $collection)
     {

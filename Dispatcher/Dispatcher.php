@@ -19,27 +19,27 @@
 
 namespace Apli\Router\Dispatcher;
 
-use Apli\Http\Message\Response;
-use Apli\Http\Message\ServerRequest;
-use Apli\Http\Server\RequestHandler;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 use Apli\Router\Exception\MethodNotAllowedException;
 use Apli\Router\Exception\NotFoundException;
 use Apli\Router\MiddlewareTrait;
 use Apli\Router\Route;
 use Apli\Router\StrategyTrait;
 
-class Dispatcher extends GroupDispatcher implements RequestHandler
+class Dispatcher extends GroupDispatcher implements RequestHandlerInterface
 {
     use StrategyTrait, MiddlewareTrait;
 
     /**
      * Dispatch the current route.
      *
-     * @param ServerRequest $request
+     * @param ServerRequestInterface $request
      *
-     * @return Response
+     * @return ResponseInterface
      */
-    public function dispatchRequest(ServerRequest $request)
+    public function dispatchRequest(ServerRequestInterface $request)
     {
         $match = $this->dispatch($request->getMethod(), $request->getUri()->getPath());
 
@@ -95,7 +95,7 @@ class Dispatcher extends GroupDispatcher implements RequestHandler
      */
     protected function setFoundMiddleware(Route $route)
     {
-        if (!is_null($route->getStrategy())) {
+        if ($route->getStrategy() !== null) {
             $route->setStrategy($this->getStrategy());
         }
 
@@ -111,14 +111,14 @@ class Dispatcher extends GroupDispatcher implements RequestHandler
     }
 
     /**
-     * @param ServerRequest $request
-     * @return Response
+     * @param ServerRequestInterface $request
+     * @return ResponseInterface
      */
-    public function handle(ServerRequest $request)
+    public function handle(ServerRequestInterface $request): ResponseInterface
     {
         $middleware = $this->shiftMiddleware();
 
-        if (is_null($middleware)) {
+        if ($middleware === null) {
             throw new OutOfBoundsException('Reached end of middleware stack. Does your controller return a response?');
         }
 

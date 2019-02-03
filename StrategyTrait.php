@@ -23,14 +23,14 @@ trait StrategyTrait
 {
 
     /**
-     * @var Strategy
+     * @var StrategyInterface
      */
     protected $strategy;
 
     /**
      * Gets the strategy.
      *
-     * @return Strategy
+     * @return StrategyInterface
      */
     public function getStrategy()
     {
@@ -40,11 +40,11 @@ trait StrategyTrait
     /**
      * Set the strategy.
      *
-     * @param Strategy $strategy
+     * @param StrategyInterface $strategy
      *
      * @return self
      */
-    public function setStrategy(Strategy $strategy)
+    public function setStrategy(StrategyInterface $strategy)
     {
         $this->strategy = $strategy;
         return $this;

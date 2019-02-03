@@ -19,10 +19,10 @@
 
 namespace Apli\Router\Exception;
 
-use Apli\Http\Message\Response;
-use Apli\Router\HttpException;
+use Psr\Http\Message\ResponseInterface;
+use Apli\Router\HttpExceptionInterface;
 
-class Exception extends \Exception implements HttpException
+class Exception extends \Exception implements HttpExceptionInterface
 {
     /**
      * @var array
@@ -79,10 +79,10 @@ class Exception extends \Exception implements HttpException
     }
 
     /**
-     * @param Response $response
-     * @return Response
+     * @param ResponseInterface $response
+     * @return ResponseInterface
      */
-    public function buildJsonResponse(Response $response)
+    public function buildJsonResponse(ResponseInterface $response)
     {
         $this->headers['content-type'] = 'application/json';
         foreach ($this->headers as $key => $value) {

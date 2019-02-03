@@ -20,7 +20,7 @@
 namespace Apli\Router;
 
 
-interface DataGenerator
+interface DataGeneratorInterface
 {
     /**
      * Adds a route to the data generator. The route data uses the

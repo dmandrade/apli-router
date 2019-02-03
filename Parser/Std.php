@@ -19,9 +19,9 @@
 
 namespace Apli\Router\Parser;
 
-use Apli\Router\RouteParser;
+use Apli\Router\RouteParserInterface;
 
-class Std implements RouteParser
+class Std implements RouteParserInterface
 {
 
     const VARIABLE_REGEX = <<<'REGEX'
