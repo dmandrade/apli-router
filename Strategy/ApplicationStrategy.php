@@ -21,9 +21,7 @@ namespace Apli\Router\Strategy;
 
 use Apli\Router\ContainerTrait;
 use Apli\Router\Exception\MethodNotAllowedException;
-use Apli\Router\Exception\NotFoundException;
 use Apli\Router\Route;
-use Apli\Router\StrategyInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

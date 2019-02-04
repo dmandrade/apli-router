@@ -4,10 +4,10 @@
  *
  *  This file is part of the apli project.
  *
- *  @project apli
- *  @file Router.php
- *  @author Danilo Andrade <danilo@webbingbrasil.com.br>
- *  @date 27/08/18 at 10:26
+ * @project apli
+ * @file Router.php
+ * @author Danilo Andrade <danilo@webbingbrasil.com.br>
+ * @date 27/08/18 at 10:26
  */
 
 /**
@@ -19,13 +19,13 @@
 
 namespace Apli\Router;
 
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
 use Apli\Router\DataGenerator\GroupGenerator;
 use Apli\Router\Dispatcher\Dispatcher;
 use Apli\Router\Parser\Std;
 use Apli\Router\Strategy\ApplicationStrategy;
 use InvalidArgumentException;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 class Router implements RouteCollectionInterface
 {

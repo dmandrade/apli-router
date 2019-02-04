@@ -4,10 +4,10 @@
  *
  *  This file is part of the apli project.
  *
- *  @project apli
- *  @file AbstractGenerator.php
- *  @author Danilo Andrade <danilo@webbingbrasil.com.br>
- *  @date 27/08/18 at 10:26
+ * @project apli
+ * @file AbstractGenerator.php
+ * @author Danilo Andrade <danilo@webbingbrasil.com.br>
+ * @date 27/08/18 at 10:26
  */
 
 /**

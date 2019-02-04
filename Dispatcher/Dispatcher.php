@@ -4,10 +4,10 @@
  *
  *  This file is part of the apli project.
  *
- *  @project apli
- *  @file Dispatcher.php
- *  @author Danilo Andrade <danilo@webbingbrasil.com.br>
- *  @date 27/08/18 at 10:26
+ * @project apli
+ * @file Dispatcher.php
+ * @author Danilo Andrade <danilo@webbingbrasil.com.br>
+ * @date 27/08/18 at 10:26
  */
 
 /**
@@ -19,14 +19,14 @@
 
 namespace Apli\Router\Dispatcher;
 
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\RequestHandlerInterface;
 use Apli\Router\Exception\MethodNotAllowedException;
 use Apli\Router\Exception\NotFoundException;
 use Apli\Router\MiddlewareTrait;
 use Apli\Router\Route;
 use Apli\Router\StrategyTrait;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
 class Dispatcher extends GroupDispatcher implements RequestHandlerInterface
 {
