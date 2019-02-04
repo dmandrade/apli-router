@@ -1,11 +1,12 @@
 <?php
 /**
- *  Copyright (c) 2018 Danilo Andrade
+ *  Copyright (c) 2018 Danilo Andrade.
  *
  *  This file is part of the apli project.
  *
  * @project apli
  * @file AbstractGenerator.php
+ *
  * @author Danilo Andrade <danilo@webbingbrasil.com.br>
  * @date 27/08/18 at 10:26
  */
@@ -14,7 +15,7 @@
  * Created by PhpStorm.
  * User: Danilo
  * Date: 25/08/2018
- * Time: 14:04
+ * Time: 14:04.
  */
 
 namespace Apli\Router\DataGenerator;
@@ -38,6 +39,7 @@ abstract class AbstractGenerator implements DataGeneratorInterface
     {
         if ($this->isStaticRoute($routeData)) {
             $this->addStaticRoute($route, $routeData);
+
             return;
         }
 
@@ -46,6 +48,7 @@ abstract class AbstractGenerator implements DataGeneratorInterface
 
     /**
      * @param mixed[]
+     *
      * @return bool
      */
     private function isStaticRoute($routeData)
@@ -100,6 +103,7 @@ abstract class AbstractGenerator implements DataGeneratorInterface
 
     /**
      * @param mixed[]
+     *
      * @return mixed[]
      */
     private function buildRegexForRoute($routeData)
@@ -126,11 +130,13 @@ abstract class AbstractGenerator implements DataGeneratorInterface
             $variables[$varName] = $varName;
             $regex .= '('.$regexPart.')';
         }
+
         return [$regex, $variables];
     }
 
     /**
      * @param string
+     *
      * @return bool
      */
     private function regexHasCapturingGroups($regex)
@@ -140,7 +146,7 @@ abstract class AbstractGenerator implements DataGeneratorInterface
             return false;
         }
         // Semi-accurate detection for capturing groups
-        return (bool)preg_match(
+        return (bool) preg_match(
             '~
                 (?:
                     \(\?\(
@@ -165,6 +171,7 @@ abstract class AbstractGenerator implements DataGeneratorInterface
         if (empty($this->methodToRegexToRoutesMap)) {
             return [$this->staticRoutes, []];
         }
+
         return [$this->staticRoutes, $this->generateVariableRouteData()];
     }
 
@@ -179,17 +186,20 @@ abstract class AbstractGenerator implements DataGeneratorInterface
             $chunks = array_chunk($regexToRoutesMap, $chunkSize, true);
             $data[$method] = array_map([$this, 'processChunk'], $chunks);
         }
+
         return $data;
     }
 
     /**
      * @param int
+     *
      * @return int
      */
     private function computeChunkSize($count)
     {
         $numParts = max(1, round($count / $this->getApproxChunkSize()));
-        return (int)ceil($count / $numParts);
+
+        return (int) ceil($count / $numParts);
     }
 
     /**

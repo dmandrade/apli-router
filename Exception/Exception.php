@@ -1,11 +1,12 @@
 <?php
 /**
- *  Copyright (c) 2018 Danilo Andrade
+ *  Copyright (c) 2018 Danilo Andrade.
  *
  *  This file is part of the apli project.
  *
  * @project apli
  * @file Exception.php
+ *
  * @author Danilo Andrade <danilo@webbingbrasil.com.br>
  * @date 27/08/18 at 10:26
  */
@@ -14,7 +15,7 @@
  * Created by PhpStorm.
  * User: Danilo
  * Date: 25/08/2018
- * Time: 14:27
+ * Time: 14:27.
  */
 
 namespace Apli\Router\Exception;
@@ -35,18 +36,18 @@ class Exception extends \Exception implements HttpExceptionInterface
     protected $message;
 
     /**
-     * @var integer
+     * @var int
      */
     protected $status;
 
     /**
      * Constructor.
      *
-     * @param integer    $status
+     * @param int        $status
      * @param string     $message
      * @param \Exception $previous
      * @param array      $headers
-     * @param integer    $code
+     * @param int        $code
      */
     public function __construct(
         $status,
@@ -54,8 +55,7 @@ class Exception extends \Exception implements HttpExceptionInterface
         \Exception $previous = null,
         array $headers = [],
         $code = 0
-    )
-    {
+    ) {
         $this->headers = $headers;
         $this->message = $message;
         $this->status = $status;
@@ -80,6 +80,7 @@ class Exception extends \Exception implements HttpExceptionInterface
 
     /**
      * @param ResponseInterface $response
+     *
      * @return ResponseInterface
      */
     public function buildJsonResponse(ResponseInterface $response)
@@ -90,10 +91,11 @@ class Exception extends \Exception implements HttpExceptionInterface
         }
         if ($response->getBody()->isWritable()) {
             $response->getBody()->write(json_encode([
-                'status_code' => $this->status,
-                'reason_phrase' => $this->message
+                'status_code'   => $this->status,
+                'reason_phrase' => $this->message,
             ]));
         }
+
         return $response->withStatus($this->status, $this->message);
     }
 }

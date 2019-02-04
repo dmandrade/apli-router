@@ -11,7 +11,7 @@ abstract class AbstractStrategy implements StrategyInterface
     protected $defaultResponseHeaders = [];
 
     /**
-     * Get current default response headers
+     * Get current default response headers.
      *
      * @return array
      */
@@ -21,7 +21,7 @@ abstract class AbstractStrategy implements StrategyInterface
     }
 
     /**
-     * Add multiple default response headers
+     * Add multiple default response headers.
      *
      * @param array $headers
      *
@@ -32,11 +32,12 @@ abstract class AbstractStrategy implements StrategyInterface
         foreach ($headers as $name => $value) {
             $this->addDefaultResponseHeader($name, $value);
         }
+
         return $this;
     }
 
     /**
-     * Add or replace a default response header
+     * Add or replace a default response header.
      *
      * @param string $name
      * @param string $value
@@ -46,11 +47,12 @@ abstract class AbstractStrategy implements StrategyInterface
     public function addDefaultResponseHeader(string $name, string $value)
     {
         $this->defaultResponseHeaders[strtolower($name)] = $value;
+
         return $this;
     }
 
     /**
-     * Apply default response headers
+     * Apply default response headers.
      *
      * Headers that already exist on the response will NOT be replaced.
      *
@@ -65,6 +67,7 @@ abstract class AbstractStrategy implements StrategyInterface
                 $response = $response->withHeader($name, $value);
             }
         }
+
         return $response;
     }
 }

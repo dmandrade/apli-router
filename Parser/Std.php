@@ -1,11 +1,12 @@
 <?php
 /**
- *  Copyright (c) 2018 Danilo Andrade
+ *  Copyright (c) 2018 Danilo Andrade.
  *
  *  This file is part of the apli project.
  *
  * @project apli
  * @file Std.php
+ *
  * @author Danilo Andrade <danilo@webbingbrasil.com.br>
  * @date 27/08/18 at 10:26
  */
@@ -14,7 +15,7 @@
  * Created by PhpStorm.
  * User: Danilo
  * Date: 25/08/2018
- * Time: 14:03
+ * Time: 14:03.
  */
 
 namespace Apli\Router\Parser;
@@ -23,7 +24,6 @@ use Apli\Router\RouteParserInterface;
 
 class Std implements RouteParserInterface
 {
-
     const VARIABLE_REGEX = <<<'REGEX'
 \{
     \s* ([a-zA-Z_][a-zA-Z0-9_-]*) \s*
@@ -37,6 +37,7 @@ REGEX;
 
     /**
      * @param string $route
+     *
      * @return array|\mixed[][]
      */
     public function parse($route)
@@ -50,6 +51,7 @@ REGEX;
             if (preg_match('~'.self::VARIABLE_REGEX.'(*SKIP)(*F) | \]~x', $routeWithoutClosingOptionals)) {
                 throw new BadRouteException('Optional segments can only occur at the end of a route');
             }
+
             throw new BadRouteException("Number of opening '[' and closing ']' does not match");
         }
         $currentRoute = '';
@@ -61,6 +63,7 @@ REGEX;
             $currentRoute .= $segment;
             $routeDatas[] = $this->parsePlaceholders($currentRoute);
         }
+
         return $routeDatas;
     }
 
@@ -68,6 +71,7 @@ REGEX;
      * Parses a route string that does not contain optional segments.
      *
      * @param string
+     *
      * @return mixed[]
      */
     private function parsePlaceholders($route)
@@ -86,13 +90,14 @@ REGEX;
             }
             $routeData[] = [
                 $set[1][0],
-                isset($set[2]) ? trim($set[2][0]) : self::DEFAULT_DISPATCH_REGEX
+                isset($set[2]) ? trim($set[2][0]) : self::DEFAULT_DISPATCH_REGEX,
             ];
             $offset = $set[0][1] + strlen($set[0][0]);
         }
         if ($offset !== strlen($route)) {
             $routeData[] = substr($route, $offset);
         }
+
         return $routeData;
     }
 }

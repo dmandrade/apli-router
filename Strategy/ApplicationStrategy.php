@@ -1,11 +1,12 @@
 <?php
 /**
- *  Copyright (c) 2018 Danilo Andrade
+ *  Copyright (c) 2018 Danilo Andrade.
  *
  *  This file is part of the apli project.
  *
  * @project apli
  * @file ApplicationStrategy.php
+ *
  * @author Danilo Andrade <danilo@webbingbrasil.com.br>
  * @date 27/08/18 at 10:26
  */
@@ -14,7 +15,7 @@
  * Created by PhpStorm.
  * User: Danilo
  * Date: 25/08/2018
- * Time: 13:45
+ * Time: 13:45.
  */
 
 namespace Apli\Router\Strategy;
@@ -35,8 +36,10 @@ class ApplicationStrategy extends AbstractStrategy
     /**
      * @param Route                  $route
      * @param ServerRequestInterface $request
-     * @return ResponseInterface
+     *
      * @throws \Psr\Container\NotFoundExceptionInterface
+     *
+     * @return ResponseInterface
      */
     public function invokeRouteCallable(Route $route, ServerRequestInterface $request)
     {
@@ -50,6 +53,7 @@ class ApplicationStrategy extends AbstractStrategy
 
     /**
      * @param \Psr\Container\NotFoundExceptionInterface $exception
+     *
      * @return MiddlewareInterface|RequestHandlerInterface
      */
     public function getNotFoundDecorator(NotFoundExceptionInterface $exception)
@@ -59,6 +63,7 @@ class ApplicationStrategy extends AbstractStrategy
 
     /**
      * @param MethodNotAllowedException $exception
+     *
      * @return MiddlewareInterface
      */
     public function getMethodNotAllowedDecorator(MethodNotAllowedException $exception)
@@ -67,7 +72,7 @@ class ApplicationStrategy extends AbstractStrategy
     }
 
     /**
-     * Return a middleware that simply throws an error
+     * Return a middleware that simply throws an error.
      *
      * @param \Throwable $error
      *
@@ -75,8 +80,7 @@ class ApplicationStrategy extends AbstractStrategy
      */
     protected function throwThrowableMiddleware(Throwable $error)
     {
-        return new class($error) implements MiddlewareInterface
-        {
+        return new class($error) implements MiddlewareInterface {
             protected $error;
 
             public function __construct(Throwable $error)
@@ -87,8 +91,7 @@ class ApplicationStrategy extends AbstractStrategy
             public function process(
                 ServerRequestInterface $request,
                 RequestHandlerInterface $requestHandler
-            ): ResponseInterface
-            {
+            ): ResponseInterface {
                 throw $this->error;
             }
         };
@@ -107,16 +110,14 @@ class ApplicationStrategy extends AbstractStrategy
      */
     public function getThrowableHandler()
     {
-        return new class implements MiddlewareInterface
-        {
+        return new class() implements MiddlewareInterface {
             /**
              * {@inheritdoc}
              */
             public function process(
                 ServerRequestInterface $request,
                 RequestHandlerInterface $requestHandler
-            ): ResponseInterface
-            {
+            ): ResponseInterface {
                 try {
                     return $requestHandler->handle($request);
                 } catch (Throwable $e) {

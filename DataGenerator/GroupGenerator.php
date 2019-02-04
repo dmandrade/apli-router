@@ -1,11 +1,12 @@
 <?php
 /**
- *  Copyright (c) 2018 Danilo Andrade
+ *  Copyright (c) 2018 Danilo Andrade.
  *
  *  This file is part of the apli project.
  *
  * @project apli
  * @file GroupGenerator.php
+ *
  * @author Danilo Andrade <danilo@webbingbrasil.com.br>
  * @date 27/08/18 at 10:26
  */
@@ -14,7 +15,7 @@
  * Created by PhpStorm.
  * User: Danilo
  * Date: 25/08/2018
- * Time: 14:06
+ * Time: 14:06.
  */
 
 namespace Apli\Router\DataGenerator;
@@ -33,6 +34,7 @@ class GroupGenerator extends AbstractGenerator
 
     /**
      * @param Route[] $regexToRoutesMap
+     *
      * @return array|mixed[]
      */
     protected function processChunk($regexToRoutesMap)
@@ -45,9 +47,10 @@ class GroupGenerator extends AbstractGenerator
             $numGroups = max($numGroups, $numVariables);
             $regexes[] = $regex.str_repeat('()', $numGroups - $numVariables);
             $routeMap[$numGroups + 1] = [$route, $route->getVariables()];
-            ++$numGroups;
+            $numGroups++;
         }
         $regex = '~^(?|'.implode('|', $regexes).')$~';
+
         return ['regex' => $regex, 'routeMap' => $routeMap];
     }
 }

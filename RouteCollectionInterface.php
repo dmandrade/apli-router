@@ -1,11 +1,12 @@
 <?php
 /**
- *  Copyright (c) 2018 Danilo Andrade
+ *  Copyright (c) 2018 Danilo Andrade.
  *
  *  This file is part of the apli project.
  *
  * @project apli
  * @file RouteCollection.php
+ *
  * @author Danilo Andrade <danilo@webbingbrasil.com.br>
  * @date 27/08/18 at 10:26
  */
@@ -14,14 +15,13 @@
  * Created by PhpStorm.
  * User: Danilo
  * Date: 25/08/2018
- * Time: 13:33
+ * Time: 13:33.
  */
 
 namespace Apli\Router;
 
 /**
- * Interface RouteCollection
- * @package Apli\Router
+ * Interface RouteCollection.
  */
 interface RouteCollectionInterface
 {

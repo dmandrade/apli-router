@@ -1,11 +1,12 @@
 <?php
 /**
- *  Copyright (c) 2018 Danilo Andrade
+ *  Copyright (c) 2018 Danilo Andrade.
  *
  *  This file is part of the apli project.
  *
  * @project apli
  * @file RouteGroup.php
+ *
  * @author Danilo Andrade <danilo@webbingbrasil.com.br>
  * @date 27/08/18 at 10:26
  */
@@ -69,6 +70,7 @@ class RouteGroup
      * @param string $method
      * @param string $path
      * @param        $handler
+     *
      * @return Route
      */
     public function map($method, $path, $handler)
@@ -91,6 +93,7 @@ class RouteGroup
         if (is_null($route->getStrategy()) && !is_null($this->getStrategy())) {
             $route->setStrategy($this->getStrategy());
         }
+
         return $route;
     }
 }

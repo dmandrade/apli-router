@@ -1,11 +1,12 @@
 <?php
 /**
- *  Copyright (c) 2018 Danilo Andrade
+ *  Copyright (c) 2018 Danilo Andrade.
  *
  *  This file is part of the apli project.
  *
  * @project apli
  * @file Dispatcher.php
+ *
  * @author Danilo Andrade <danilo@webbingbrasil.com.br>
  * @date 27/08/18 at 10:26
  */
@@ -14,7 +15,7 @@
  * Created by PhpStorm.
  * User: Danilo
  * Date: 25/08/2018
- * Time: 13:40
+ * Time: 13:40.
  */
 
 namespace Apli\Router\Dispatcher;
@@ -48,7 +49,7 @@ class Dispatcher extends GroupDispatcher implements RequestHandlerInterface
                 $this->setNotFoundDecoratorMiddleware();
                 break;
             case self::METHOD_NOT_ALLOWED:
-                $allowed = (array)$match[1];
+                $allowed = (array) $match[1];
                 $this->setMethodNotAllowedDecoratorMiddleware($allowed);
                 break;
             case self::FOUND:
@@ -112,6 +113,7 @@ class Dispatcher extends GroupDispatcher implements RequestHandlerInterface
 
     /**
      * @param ServerRequestInterface $request
+     *
      * @return ResponseInterface
      */
     public function handle(ServerRequestInterface $request): ResponseInterface

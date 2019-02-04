@@ -1,11 +1,12 @@
 <?php
 /**
- *  Copyright (c) 2018 Danilo Andrade
+ *  Copyright (c) 2018 Danilo Andrade.
  *
  *  This file is part of the apli project.
  *
  * @project apli
  * @file JsonStrategy.php
+ *
  * @author Danilo Andrade <danilo@webbingbrasil.com.br>
  * @date 27/08/18 at 10:26
  */
@@ -14,7 +15,7 @@
  * Created by PhpStorm.
  * User: Danilo
  * Date: 25/08/2018
- * Time: 15:40
+ * Time: 15:40.
  */
 
 namespace Apli\Router\Strategy;
@@ -55,8 +56,10 @@ class JsonStrategy extends AbstractStrategy implements StrategyInterface
     /**
      * @param Route                  $route
      * @param ServerRequestInterface $request
-     * @return mixed|ResponseInterface
+     *
      * @throws \Psr\Container\NotFoundExceptionInterface
+     *
+     * @return mixed|ResponseInterface
      */
     public function invokeRouteCallable(Route $route, ServerRequestInterface $request)
     {
@@ -75,7 +78,7 @@ class JsonStrategy extends AbstractStrategy implements StrategyInterface
     }
 
     /**
-     * Check if the response can be converted to JSON
+     * Check if the response can be converted to JSON.
      *
      * Arrays can always be converted, objects can be converted if they're not a response already
      *
@@ -89,11 +92,12 @@ class JsonStrategy extends AbstractStrategy implements StrategyInterface
             return false;
         }
 
-        return (is_array($response) || is_object($response));
+        return is_array($response) || is_object($response);
     }
 
     /**
      * @param NotFoundException $exception
+     *
      * @return MiddlewareInterface
      */
     public function getNotFoundDecorator(NotFoundException $exception)
@@ -110,13 +114,13 @@ class JsonStrategy extends AbstractStrategy implements StrategyInterface
      */
     protected function buildJsonResponseMiddleware(HttpExceptionInterface $exception)
     {
-        return new class($this->responseFactory->createResponse(), $exception) implements MiddlewareInterface
-        {
+        return new class($this->responseFactory->createResponse(), $exception) implements MiddlewareInterface {
             protected $response;
             protected $exception;
 
             /**
              *  constructor.
+             *
              * @param ResponseInterface      $response
              * @param HttpExceptionInterface $exception
              */
@@ -129,13 +133,13 @@ class JsonStrategy extends AbstractStrategy implements StrategyInterface
             /**
              * @param ServerRequestInterface  $request
              * @param RequestHandlerInterface $handler
+             *
              * @return ResponseInterface
              */
             public function process(
                 ServerRequestInterface $request,
                 RequestHandlerInterface $handler
-            ): ResponseInterface
-            {
+            ): ResponseInterface {
                 return $this->exception->buildJsonResponse($this->response);
             }
         };
@@ -143,6 +147,7 @@ class JsonStrategy extends AbstractStrategy implements StrategyInterface
 
     /**
      * @param MethodNotAllowedException $exception
+     *
      * @return MiddlewareInterface
      */
     public function getMethodNotAllowedDecorator(MethodNotAllowedException $exception)
@@ -163,8 +168,7 @@ class JsonStrategy extends AbstractStrategy implements StrategyInterface
      */
     public function getThrowableHandler()
     {
-        return new class($this->responseFactory->createResponse()) implements MiddlewareInterface
-        {
+        return new class($this->responseFactory->createResponse()) implements MiddlewareInterface {
             protected $response;
 
             public function __construct(ResponseInterface $response)
@@ -175,8 +179,7 @@ class JsonStrategy extends AbstractStrategy implements StrategyInterface
             public function process(
                 ServerRequestInterface $request,
                 RequestHandlerInterface $requestHandler
-            ): ResponseInterface
-            {
+            ): ResponseInterface {
                 try {
                     return $requestHandler->handle($request);
                 } catch (Throwable $exception) {
@@ -185,10 +188,11 @@ class JsonStrategy extends AbstractStrategy implements StrategyInterface
                         return $exception->buildJsonResponse($response);
                     }
                     $response->getBody()->write(json_encode([
-                        'status_code' => 500,
-                        'reason_phrase' => $exception->getMessage()
+                        'status_code'   => 500,
+                        'reason_phrase' => $exception->getMessage(),
                     ]));
                     $response = $response->withAddedHeader('content-type', 'application/json');
+
                     return $response->withStatus(500, strtok($exception->getMessage(), "\n"));
                 }
             }

@@ -1,11 +1,12 @@
 <?php
 /**
- *  Copyright (c) 2018 Danilo Andrade
+ *  Copyright (c) 2018 Danilo Andrade.
  *
  *  This file is part of the apli project.
  *
  * @project apli
  * @file Router.php
+ *
  * @author Danilo Andrade <danilo@webbingbrasil.com.br>
  * @date 27/08/18 at 10:26
  */
@@ -14,7 +15,7 @@
  * Created by PhpStorm.
  * User: Danilo
  * Date: 25/08/2018
- * Time: 13:04
+ * Time: 13:04.
  */
 
 namespace Apli\Router;
@@ -60,11 +61,11 @@ class Router implements RouteCollectionInterface
      * @var array
      */
     protected $patternMatchers = [
-        '/{(.+?):number}/' => '{$1:[0-9]+}',
-        '/{(.+?):word}/' => '{$1:[a-zA-Z]+}',
+        '/{(.+?):number}/'        => '{$1:[0-9]+}',
+        '/{(.+?):word}/'          => '{$1:[a-zA-Z]+}',
         '/{(.+?):alphanum_dash}/' => '{$1:[a-zA-Z0-9-_]+}',
-        '/{(.+?):slug}/' => '{$1:[a-z0-9-]+}',
-        '/{(.+?):uuid}/' => '{$1:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}+}'
+        '/{(.+?):slug}/'          => '{$1:[a-z0-9-]+}',
+        '/{(.+?):uuid}/'          => '{$1:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}+}',
     ];
 
     /**
@@ -83,6 +84,7 @@ class Router implements RouteCollectionInterface
      * @param string $method
      * @param string $path
      * @param        $handler
+     *
      * @return Route
      */
     public function map($method, $path, $handler)
@@ -90,6 +92,7 @@ class Router implements RouteCollectionInterface
         $path = sprintf('/%s', ltrim($path, '/'));
         $route = new Route($method, $path, $handler);
         $this->routes[] = $route;
+
         return $route;
     }
 
@@ -105,11 +108,13 @@ class Router implements RouteCollectionInterface
     {
         $group = new RouteGroup($prefix, $group, $this);
         $this->groups[] = $group;
+
         return $group;
     }
 
     /**
      * @param ServerRequestInterface $request
+     *
      * @return ResponseInterface
      */
     public function dispatch(ServerRequestInterface $request)
@@ -254,6 +259,7 @@ class Router implements RouteCollectionInterface
         if (array_key_exists($name, $this->namedRoutes)) {
             return $this->namedRoutes[$name];
         }
+
         throw new InvalidArgumentException(sprintf('No route of the name (%s) exists', $name));
     }
 
@@ -270,6 +276,7 @@ class Router implements RouteCollectionInterface
         $pattern = '/{(.+?):'.$alias.'}/';
         $regex = '{$1:'.$regex.'}';
         $this->patternMatchers[$pattern] = $regex;
+
         return $this;
     }
 }

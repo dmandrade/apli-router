@@ -1,11 +1,12 @@
 <?php
 /**
- *  Copyright (c) 2018 Danilo Andrade
+ *  Copyright (c) 2018 Danilo Andrade.
  *
  *  This file is part of the apli project.
  *
  * @project apli
  * @file Strategy.php
+ *
  * @author Danilo Andrade <danilo@webbingbrasil.com.br>
  * @date 27/08/18 at 10:26
  */
@@ -14,7 +15,7 @@
  * Created by PhpStorm.
  * User: Danilo
  * Date: 25/08/2018
- * Time: 13:46
+ * Time: 13:46.
  */
 
 namespace Apli\Router;
@@ -26,12 +27,10 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 
 /**
- * Interface Strategy
- * @package Apli\Router\Strategy
+ * Interface Strategy.
  */
 interface StrategyInterface
 {
-
     /**
      * Invoke the route callable based on the strategy.
      *
@@ -43,7 +42,7 @@ interface StrategyInterface
     public function invokeRouteCallable(Route $route, ServerRequestInterface $request);
 
     /**
-     * Get a middleware that will decorate a NotFoundException
+     * Get a middleware that will decorate a NotFoundException.
      *
      * @param NotFoundExceptionInterface $exception
      *
@@ -52,7 +51,7 @@ interface StrategyInterface
     public function getNotFoundDecorator(NotFoundExceptionInterface $exception);
 
     /**
-     * Get a middleware that will decorate a NotAllowedException
+     * Get a middleware that will decorate a NotAllowedException.
      *
      * @param MethodNotAllowedException $exception
      *

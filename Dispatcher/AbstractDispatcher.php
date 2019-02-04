@@ -1,11 +1,12 @@
 <?php
 /**
- *  Copyright (c) 2018 Danilo Andrade
+ *  Copyright (c) 2018 Danilo Andrade.
  *
  *  This file is part of the apli project.
  *
  * @project apli
  * @file AbstractDispatcher.php
+ *
  * @author Danilo Andrade <danilo@webbingbrasil.com.br>
  * @date 27/08/18 at 10:26
  */
@@ -14,7 +15,7 @@
  * Created by PhpStorm.
  * User: Danilo
  * Date: 25/08/2018
- * Time: 13:42
+ * Time: 13:42.
  */
 
 namespace Apli\Router\Dispatcher;
@@ -23,7 +24,6 @@ use Apli\Router\DispatcherInterface;
 
 abstract class AbstractDispatcher implements DispatcherInterface
 {
-
     /** @var mixed[][] */
     protected $staticRouteMap = [];
 
@@ -34,6 +34,7 @@ abstract class AbstractDispatcher implements DispatcherInterface
     {
         if (isset($this->staticRouteMap[$httpMethod][$uri])) {
             $handler = $this->staticRouteMap[$httpMethod][$uri];
+
             return [self::FOUND, $handler, []];
         }
         $varRouteData = $this->variableRouteData;
@@ -47,6 +48,7 @@ abstract class AbstractDispatcher implements DispatcherInterface
         if ($httpMethod === 'HEAD') {
             if (isset($this->staticRouteMap['GET'][$uri])) {
                 $handler = $this->staticRouteMap['GET'][$uri];
+
                 return [self::FOUND, $handler, []];
             }
             if (isset($varRouteData['GET'])) {
@@ -59,6 +61,7 @@ abstract class AbstractDispatcher implements DispatcherInterface
         // If nothing else matches, try fallback routes
         if (isset($this->staticRouteMap['*'][$uri])) {
             $handler = $this->staticRouteMap['*'][$uri];
+
             return [self::FOUND, $handler, []];
         }
         if (isset($varRouteData['*'])) {
@@ -87,6 +90,7 @@ abstract class AbstractDispatcher implements DispatcherInterface
         if ($allowedMethods) {
             return [self::METHOD_NOT_ALLOWED, $allowedMethods];
         }
+
         return [self::NOT_FOUND];
     }
 

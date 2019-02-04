@@ -1,11 +1,12 @@
 <?php
 /**
- *  Copyright (c) 2018 Danilo Andrade
+ *  Copyright (c) 2018 Danilo Andrade.
  *
  *  This file is part of the apli project.
  *
  * @project apli
  * @file Route.php
+ *
  * @author Danilo Andrade <danilo@webbingbrasil.com.br>
  * @date 27/08/18 at 10:26
  */
@@ -14,7 +15,7 @@
  * Created by PhpStorm.
  * User: Danilo
  * Date: 25/08/2018
- * Time: 13:04
+ * Time: 13:04.
  */
 
 namespace Apli\Router;
@@ -66,6 +67,7 @@ class Route implements MiddlewareInterface
 
     /**
      * Route constructor.
+     *
      * @param string $method
      * @param string $path
      * @param        $handler
@@ -119,12 +121,14 @@ class Route implements MiddlewareInterface
     public function matches($str)
     {
         $regex = '~^'.$this->regex.'$~';
-        return (bool)preg_match($regex, $str);
+
+        return (bool) preg_match($regex, $str);
     }
 
     /**
      * @param ServerRequestInterface  $request
      * @param RequestHandlerInterface $handler
+     *
      * @return ResponseInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
@@ -136,8 +140,10 @@ class Route implements MiddlewareInterface
      * Get the callable.
      *
      * @param ContainerInterface|null $container
-     * @return array|callable|mixed|string
+     *
      * @throws \PSNotFoundExceptionInterface
+     *
+     * @return array|callable|mixed|string
      */
     public function getCallable(ContainerInterface $container = null)
     {
@@ -151,17 +157,18 @@ class Route implements MiddlewareInterface
         if (is_array($callable) && isset($callable[0]) && is_string($callable[0])) {
             $class = (!is_null($container) && $container->has($callable[0]))
                 ? $container->get($callable[0])
-                : new $callable[0];
+                : new $callable[0]();
             $callable = [$class, $callable[1]];
         }
         if (is_string($callable) && method_exists($callable, '__invoke')) {
             $callable = (!is_null($container) && $container->has($callable))
                 ? $container->get($callable)
-                : new $callable;
+                : new $callable();
         }
         if (!is_callable($callable)) {
             throw new InvalidArgumentException('Could not resolve a callable for this route');
         }
+
         return $callable;
     }
 
@@ -185,6 +192,7 @@ class Route implements MiddlewareInterface
     public function setVars(array $vars)
     {
         $this->vars = $vars;
+
         return $this;
     }
 
@@ -208,6 +216,7 @@ class Route implements MiddlewareInterface
     public function setParentGroup(RouteGroup $group)
     {
         $this->group = $group;
+
         return $this;
     }
 
