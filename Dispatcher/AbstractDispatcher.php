@@ -32,11 +32,15 @@ abstract class AbstractDispatcher implements DispatcherInterface
 
     public function dispatch($httpMethod, $uri)
     {
+        if(preg_match('/(\.*)$/', $uri) === false) {
+            $uri = rtrim($uri, '/');
+        }
         if (isset($this->staticRouteMap[$httpMethod][$uri])) {
             $handler = $this->staticRouteMap[$httpMethod][$uri];
 
             return [self::FOUND, $handler, []];
         }
+
         $varRouteData = $this->variableRouteData;
         if (isset($varRouteData[$httpMethod])) {
             $result = $this->dispatchVariableRoute($varRouteData[$httpMethod], $uri);

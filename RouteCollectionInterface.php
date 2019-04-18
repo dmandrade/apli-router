@@ -105,4 +105,14 @@ interface RouteCollectionInterface
      * @return Route
      */
     public function options($path, $handler);
+
+    /**
+     * Add a group of routes to the collection.
+     *
+     * @param string   $prefix
+     * @param callable $callback
+     *
+     * @return RouteGroup
+     */
+    public function group(string $prefix, callable $callback);
 }

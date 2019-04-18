@@ -13,9 +13,17 @@
 
 namespace Apli\Router;
 
-class RouteGroup
+use function call_user_func;
+use Psr\Http\Message\ServerRequestInterface;
+
+/**
+ * Class RouteGroup
+ *
+ * @package Apli\Router
+ */
+class RouteGroup implements RouteCollectionInterface
 {
-    use StrategyTrait, RouteCollectionTrait, RouteConditionHandlerTrait, MiddlewareTrait;
+    use StrategyTrait, RouteGroupTrait, RouteConditionHandlerTrait, MiddlewareTrait;
 
     /**
      * @var callable
@@ -39,11 +47,11 @@ class RouteGroup
      * @param callable                 $callback
      * @param RouteCollectionInterface $collection
      */
-    public function __construct($prefix, callable $callback, RouteCollectionInterface $collection)
+    public function __construct(string $prefix, callable $callback, RouteCollectionInterface $collection)
     {
         $this->callback = $callback;
         $this->collection = $collection;
-        $this->prefix = sprintf('/%s', ltrim($prefix, '/'));
+        $this->prefix = $this->preparePath($prefix);
     }
 
     /**
@@ -51,19 +59,29 @@ class RouteGroup
      *
      * @return string
      */
-    public function getPrefix()
+    public function getPrefix() : string
     {
-        return $this->prefix;
+        return (string) $this->prefix;
+    }
+
+    /**
+     * Get the path.
+     *
+     * @return string
+     */
+    public function getPath(): string
+    {
+        return ($this->collection instanceof self ? $this->collection->getPath() : '').$this->getPrefix();
     }
 
     /**
      * Process the group and ensure routes are added to the collection.
-     *
-     * @return void
+     * @param ServerRequestInterface $request
      */
-    public function __invoke()
+    public function __invoke(ServerRequestInterface $request)
     {
-        call_user_func_array($this->callback, [$this]);
+        call_user_func($this->callback, $this);
+        $this->processGroups($request);
     }
 
     /**
@@ -73,10 +91,9 @@ class RouteGroup
      *
      * @return Route
      */
-    public function map($method, $path, $handler)
+    public function map($method, $path, $handler) : Route
     {
-        $path = ($path === '/') ? $this->prefix : $this->prefix.sprintf('/%s', ltrim($path, '/'));
-        $route = $this->collection->map($method, $path, $handler);
+        $route = $this->collection->map($method, $this->preparePath($path), $handler);
         $route->setParentGroup($this);
         if ($host = $this->getHost()) {
             $route->setHost($host);
@@ -90,7 +107,7 @@ class RouteGroup
         foreach ($this->getMiddlewareStack() as $middleware) {
             $route->middleware($middleware);
         }
-        if (is_null($route->getStrategy()) && !is_null($this->getStrategy())) {
+        if ($route->getStrategy() === null && $this->getStrategy() !== null) {
             $route->setStrategy($this->getStrategy());
         }
 

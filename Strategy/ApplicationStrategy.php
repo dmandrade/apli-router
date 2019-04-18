@@ -21,13 +21,13 @@
 namespace Apli\Router\Strategy;
 
 use Apli\Router\ContainerTrait;
-use Apli\Router\Exception\MethodNotAllowedException;
+use Apli\Router\Exception\{MethodNotAllowedException, NotFoundException};
 use Apli\Router\Route;
-use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Throwable;
 
 class ApplicationStrategy extends AbstractStrategy
 {
@@ -52,13 +52,12 @@ class ApplicationStrategy extends AbstractStrategy
     }
 
     /**
-     * @param \Psr\Container\NotFoundExceptionInterface $exception
-     *
-     * @return MiddlewareInterface|RequestHandlerInterface
+     * @param NotFoundException $exception
+     * @return MiddlewareInterface
      */
-    public function getNotFoundDecorator(NotFoundExceptionInterface $exception)
+    public function getNotFoundDecorator(NotFoundException $exception)
     {
-        return $this->throwExceptionMiddleware($exception);
+        return $this->throwThrowableMiddleware($exception);
     }
 
     /**
@@ -74,7 +73,7 @@ class ApplicationStrategy extends AbstractStrategy
     /**
      * Return a middleware that simply throws an error.
      *
-     * @param \Throwable $error
+     * @param Throwable $error
      *
      * @return \Psr\Http\Server\MiddlewareInterface
      */

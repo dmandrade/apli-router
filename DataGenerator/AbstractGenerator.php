@@ -21,6 +21,7 @@
 namespace Apli\Router\DataGenerator;
 
 use Apli\Router\DataGeneratorInterface;
+use Apli\Router\Exception\BadRouteException;
 use Apli\Router\Route;
 
 abstract class AbstractGenerator implements DataGeneratorInterface

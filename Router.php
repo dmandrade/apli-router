@@ -28,9 +28,13 @@ use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
+/**
+ * Class Router
+ * @package Apli\Router
+ */
 class Router implements RouteCollectionInterface
 {
-    use StrategyTrait, RouteCollectionTrait;
+    use StrategyTrait, RouteGroupTrait;
 
     /**
      * @var RouteParserInterface
@@ -53,14 +57,9 @@ class Router implements RouteCollectionInterface
     protected $namedRoutes = [];
 
     /**
-     * @var RouteGroup[]
-     */
-    protected $groups = [];
-
-    /**
      * @var array
      */
-    protected $patternMatchers = [
+    protected static $patternMatchers = [
         '/{(.+?):number}/'        => '{$1:[0-9]+}',
         '/{(.+?):word}/'          => '{$1:[a-zA-Z]+}',
         '/{(.+?):alphanum_dash}/' => '{$1:[a-zA-Z0-9-_]+}',
@@ -76,8 +75,8 @@ class Router implements RouteCollectionInterface
      */
     public function __construct(RouteParserInterface $routeParser = null, DataGeneratorInterface $dataGenerator = null)
     {
-        $this->routeParser = is_null($routeParser) ? new Std() : $routeParser;
-        $this->dataGenerator = is_null($dataGenerator) ? new GroupGenerator() : $dataGenerator;
+        $this->routeParser = $routeParser ?? new Std();
+        $this->dataGenerator = $dataGenerator ?? new GroupGenerator();
     }
 
     /**
@@ -87,29 +86,12 @@ class Router implements RouteCollectionInterface
      *
      * @return Route
      */
-    public function map($method, $path, $handler)
+    public function map($method, $path, $handler): Route
     {
-        $path = sprintf('/%s', ltrim($path, '/'));
-        $route = new Route($method, $path, $handler);
+        $route = new Route($method, $this->preparePath($path), $handler);
         $this->routes[] = $route;
 
         return $route;
-    }
-
-    /**
-     * Add a group of routes to the collection.
-     *
-     * @param string   $prefix
-     * @param callable $group
-     *
-     * @return RouteGroup
-     */
-    public function group($prefix, callable $group)
-    {
-        $group = new RouteGroup($prefix, $group, $this);
-        $this->groups[] = $group;
-
-        return $group;
     }
 
     /**
@@ -117,9 +99,9 @@ class Router implements RouteCollectionInterface
      *
      * @return ResponseInterface
      */
-    public function dispatch(ServerRequestInterface $request)
+    public function dispatch(ServerRequestInterface $request): ResponseInterface
     {
-        if (is_null($this->getStrategy())) {
+        if ($this->getStrategy() === null) {
             $this->setStrategy(new ApplicationStrategy());
         }
 
@@ -138,7 +120,7 @@ class Router implements RouteCollectionInterface
      *
      * @return void
      */
-    protected function prepRoutes(ServerRequestInterface $request)
+    protected function prepRoutes(ServerRequestInterface $request): void
     {
         $this->processGroups($request);
         $this->buildNameIndex();
@@ -148,44 +130,21 @@ class Router implements RouteCollectionInterface
 
         foreach ($routes as $key => $route) {
             // check for scheme condition
-            if (!is_null($route->getScheme()) && $route->getScheme() !== $request->getUri()->getScheme()) {
+            if ($route->getScheme() !== null && $route->getScheme() !== $request->getUri()->getScheme()) {
                 continue;
             }
             // check for domain condition
-            if (!is_null($route->getHost()) && $route->getHost() !== $request->getUri()->getHost()) {
+            if ($route->getHost() !== null && $route->getHost() !== $request->getUri()->getHost()) {
                 continue;
             }
             // check for port condition
-            if (!is_null($route->getPort()) && $route->getPort() !== $request->getUri()->getPort()) {
+            if ($route->getPort() !== null && $route->getPort() !== $request->getUri()->getPort()) {
                 continue;
             }
-            if (is_null($route->getStrategy())) {
+            if ($route->getStrategy() === null) {
                 $route->setStrategy($this->getStrategy());
             }
             $this->addRoute($route);
-        }
-    }
-
-    /**
-     * Process all groups, and determine if we are using a group's strategy.
-     *
-     * @param ServerRequestInterface $request
-     *
-     * @return void
-     */
-    protected function processGroups(ServerRequestInterface $request)
-    {
-        $activePath = $request->getUri()->getPath();
-        foreach ($this->groups as $key => $group) {
-            // we want to determine if we are technically in a group even if the
-            // route is not matched so exceptions are handled correctly
-            if (strncmp($activePath, $group->getPrefix(), strlen($group->getPrefix())) === 0
-                && !is_null($group->getStrategy())
-            ) {
-                $this->setStrategy($group->getStrategy());
-            }
-            unset($this->groups[$key]);
-            $group();
         }
     }
 
@@ -194,10 +153,10 @@ class Router implements RouteCollectionInterface
      *
      * @return void
      */
-    protected function buildNameIndex()
+    protected function buildNameIndex(): void
     {
         foreach ($this->routes as $key => $route) {
-            if (!is_null($route->getName())) {
+            if ($route->getName() !== null) {
                 unset($this->routes[$key]);
                 $this->namedRoutes[$route->getName()] = $route;
             }
@@ -209,11 +168,9 @@ class Router implements RouteCollectionInterface
      *
      * The syntax used in the $route string depends on the used route parser.
      *
-     * @param string|string[] $httpMethod
-     * @param string          $route
-     * @param mixed           $handler
+     * @param Route $route
      */
-    protected function addRoute(Route $route)
+    protected function addRoute(Route $route): void
     {
         $path = $this->parseRoutePath($route->getPath());
         $routeDatas = $this->routeParser->parse($path);
@@ -229,9 +186,9 @@ class Router implements RouteCollectionInterface
      *
      * @return string
      */
-    protected function parseRoutePath($path)
+    protected function parseRoutePath($path): string
     {
-        return preg_replace(array_keys($this->patternMatchers), array_values($this->patternMatchers), $path);
+        return preg_replace(array_keys(self::$patternMatchers), array_values(self::$patternMatchers), $path);
     }
 
     /**
@@ -239,7 +196,7 @@ class Router implements RouteCollectionInterface
      *
      * @return array
      */
-    public function getData()
+    public function getData(): array
     {
         return $this->dataGenerator->getData();
     }
@@ -249,11 +206,11 @@ class Router implements RouteCollectionInterface
      *
      * @param string $name
      *
-     * @throws \InvalidArgumentException when no route of the provided name exists.
+     * @throws InvalidArgumentException when no route of the provided name exists.
      *
      * @return Route
      */
-    public function getNamedRoute($name)
+    public function getNamedRoute($name): Route
     {
         $this->buildNameIndex();
         if (array_key_exists($name, $this->namedRoutes)) {
@@ -271,12 +228,22 @@ class Router implements RouteCollectionInterface
      *
      * @return self
      */
-    public function addPatternMatcher($alias, $regex)
+    public function addPatternMatcher($alias, $regex): self
     {
         $pattern = '/{(.+?):'.$alias.'}/';
         $regex = '{$1:'.$regex.'}';
-        $this->patternMatchers[$pattern] = $regex;
+        self::$patternMatchers[$pattern] = $regex;
 
+        return $this;
+    }
+
+    /**
+     * @param array $patternMatchers
+     * @return Router
+     */
+    public function setPatternMatchers(array $patternMatchers): self
+    {
+        self::$patternMatchers = $patternMatchers;
         return $this;
     }
 }

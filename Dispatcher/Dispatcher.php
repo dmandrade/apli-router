@@ -102,7 +102,7 @@ class Dispatcher extends GroupDispatcher implements RequestHandlerInterface
 
         // wrap entire dispatch process in exception handler
         $this->prependMiddleware($route->getStrategy()->getExceptionHandler());
-        // add group and route specific niddlewares
+        // add group and route specific middlewares
         if ($group = $route->getParentGroup()) {
             $this->middlewares($group->getMiddlewareStack());
         }

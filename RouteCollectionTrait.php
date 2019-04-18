@@ -123,4 +123,20 @@ trait RouteCollectionTrait
     {
         return $this->map('OPTIONS', $path, $handler);
     }
+
+
+    /**
+     * @param string $path
+     * @return string
+     */
+    protected function preparePath(string $path) : string
+    {
+        $path = sprintf('/%s', rtrim(ltrim($path, '/'), '/'));
+
+        if($this instanceof RouteGroup) {
+            return $this->getPrefix().$path;
+        }
+
+        return $path;
+    }
 }
