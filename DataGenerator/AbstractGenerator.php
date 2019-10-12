@@ -71,11 +71,11 @@ abstract class AbstractGenerator implements DataGeneratorInterface
             ));
         }
         if (isset($this->methodToRegexToRoutesMap[$route->getMethod()])) {
-            foreach ($this->methodToRegexToRoutesMap[$route->getMethod()] as $route) {
-                if ($route->matches($routeStr)) {
+            foreach ($this->methodToRegexToRoutesMap[$route->getMethod()] as $prevRoute) {
+                if ($prevRoute->matches($routeStr)) {
                     throw new BadRouteException(sprintf(
                         'Static route "%s" is shadowed by previously defined variable route "%s" for method "%s"',
-                        $routeStr, $route->getRegex(), $route->getMethod()
+                        $routeStr, $prevRoute->getRegex(), $prevRoute->getMethod()
                     ));
                 }
             }

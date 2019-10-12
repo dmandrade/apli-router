@@ -31,6 +31,10 @@ trait RouteGroupTrait
      */
     protected $groups = [];
 
+    /**
+     * @return RouteCollectionInterface
+     */
+    abstract protected function getRouteCollection(): RouteCollectionInterface;
 
     /**
      * Add a group of routes to the collection.
@@ -42,7 +46,7 @@ trait RouteGroupTrait
      */
     public function group(string $prefix, callable $callback) : RouteGroup
     {
-        $group = new RouteGroup($prefix, $callback, $this);
+        $group = new RouteGroup($prefix, $callback, $this->getRouteCollection());
         $this->groups[] = $group;
 
         return $group;

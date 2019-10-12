@@ -22,66 +22,74 @@ namespace Apli\Router\Dispatcher;
 
 use Apli\Router\DispatcherInterface;
 
+/**
+ * Class AbstractDispatcher
+ * @package Apli\Router\Dispatcher
+ */
 abstract class AbstractDispatcher implements DispatcherInterface
 {
-    /** @var mixed[][] */
+    /** @var array */
     protected $staticRouteMap = [];
 
-    /** @var mixed[] */
+    /** @var array */
     protected $variableRouteData = [];
 
-    public function dispatch($httpMethod, $uri)
+    /**
+     * @param string $httpMethod
+     * @param string $uri
+     * @return array
+     */
+    public function dispatch(string $httpMethod, string $uri): array
     {
-        if(preg_match('/(\.*)$/', $uri) === false) {
+        if ($uri !== '/' && !preg_match('/(.*)+\.[\w]{1,4}/', $uri)) {
             $uri = rtrim($uri, '/');
         }
-        if (isset($this->staticRouteMap[$httpMethod][$uri])) {
-            $handler = $this->staticRouteMap[$httpMethod][$uri];
 
-            return [self::FOUND, $handler, []];
+        if ($httpMethod === 'HEAD') {
+            $httpMethod = 'GET';
         }
 
         $varRouteData = $this->variableRouteData;
-        if (isset($varRouteData[$httpMethod])) {
+        $result = $this->getRouteForMethod($httpMethod, $uri);
+
+        if (($result[0] === self::NOT_FOUND) && isset($varRouteData[$httpMethod])) {
             $result = $this->dispatchVariableRoute($varRouteData[$httpMethod], $uri);
-            if ($result[0] === self::FOUND) {
-                return $result;
-            }
         }
-        // For HEAD requests, attempt fallback to GET
-        if ($httpMethod === 'HEAD') {
-            if (isset($this->staticRouteMap['GET'][$uri])) {
-                $handler = $this->staticRouteMap['GET'][$uri];
 
-                return [self::FOUND, $handler, []];
-            }
-            if (isset($varRouteData['GET'])) {
-                $result = $this->dispatchVariableRoute($varRouteData['GET'], $uri);
-                if ($result[0] === self::FOUND) {
-                    return $result;
-                }
-            }
-        }
         // If nothing else matches, try fallback routes
-        if (isset($this->staticRouteMap['*'][$uri])) {
-            $handler = $this->staticRouteMap['*'][$uri];
-
-            return [self::FOUND, $handler, []];
-        }
-        if (isset($varRouteData['*'])) {
-            $result = $this->dispatchVariableRoute($varRouteData['*'], $uri);
-            if ($result[0] === self::FOUND) {
-                return $result;
+        if ($result[0] === self::NOT_FOUND) {
+            $result = $this->getRouteForMethod('*', $uri);
+            if (($result[0] === self::NOT_FOUND) && isset($varRouteData['*'])) {
+                $result = $this->dispatchVariableRoute($varRouteData['*'], $uri);
             }
         }
-        // Find allowed methods for this URI by matching against all other HTTP methods as well
+
+        if ($result[0] === self::NOT_FOUND) {
+            $allowedMethods = $this->getAllowedMethods($httpMethod, $uri);
+
+            // If there are no allowed methods the route simply does not exist
+            if ($allowedMethods) {
+                return [self::METHOD_NOT_ALLOWED, $allowedMethods];
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param string $httpMethod
+     * @param string $uri
+     * @return array
+     */
+    protected function getAllowedMethods(string $httpMethod, string $uri): array
+    {
         $allowedMethods = [];
         foreach ($this->staticRouteMap as $method => $uriMap) {
             if ($method !== $httpMethod && isset($uriMap[$uri])) {
                 $allowedMethods[] = $method;
             }
         }
-        foreach ($varRouteData as $method => $routeData) {
+        foreach ($this->variableRouteData as $method => $routeData) {
             if ($method === $httpMethod) {
                 continue;
             }
@@ -90,16 +98,44 @@ abstract class AbstractDispatcher implements DispatcherInterface
                 $allowedMethods[] = $method;
             }
         }
-        // If there are no allowed methods the route simply does not exist
-        if ($allowedMethods) {
-            return [self::METHOD_NOT_ALLOWED, $allowedMethods];
+
+        return $allowedMethods;
+    }
+
+    /**
+     * @param $uri
+     * @return array
+     */
+    protected function fallbackRoute($uri): array
+    {
+        $result = $this->getRouteForMethod('*', $uri);
+        if (($result[0] === self::NOT_FOUND) && isset($this->variableRouteData['*'])) {
+            $result = $this->dispatchVariableRoute($this->variableRouteData['*'], $uri);
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param string $httpMethod
+     * @param string $uri
+     * @return array
+     */
+    protected function getRouteForMethod(string $httpMethod, string $uri): array
+    {
+        if (isset($this->staticRouteMap[$httpMethod][$uri])) {
+            $handler = $this->staticRouteMap[$httpMethod][$uri];
+
+            return [self::FOUND, $handler, []];
         }
 
         return [self::NOT_FOUND];
     }
 
     /**
-     * @return mixed[]
+     * @param $routeData
+     * @param $uri
+     * @return array
      */
-    abstract protected function dispatchVariableRoute($routeData, $uri);
+    abstract protected function dispatchVariableRoute($routeData, $uri): array;
 }

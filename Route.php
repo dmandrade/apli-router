@@ -63,7 +63,7 @@ class Route implements MiddlewareInterface
     /**
      * @var array
      */
-    protected $vars = [];
+    protected $parameters = [];
 
     /**
      * Route constructor.
@@ -120,9 +120,7 @@ class Route implements MiddlewareInterface
      */
     public function matches($str)
     {
-        $regex = '~^'.$this->regex.'$~';
-
-        return (bool) preg_match($regex, $str);
+        return (bool) preg_match('~^'.$this->regex.'$~', $str);
     }
 
     /**
@@ -177,21 +175,21 @@ class Route implements MiddlewareInterface
      *
      * @return array
      */
-    public function getVars()
+    public function getParameters(): array
     {
-        return $this->vars;
+        return $this->parameters;
     }
 
     /**
      * Set vars to be passed to route callable.
      *
-     * @param array $vars
+     * @param array $parameters
      *
      * @return self
      */
-    public function setVars(array $vars)
+    public function setParameters(array $parameters): self
     {
-        $this->vars = $vars;
+        $this->parameters = $parameters;
 
         return $this;
     }

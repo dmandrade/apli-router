@@ -55,6 +55,14 @@ class RouteGroup implements RouteCollectionInterface
     }
 
     /**
+     * @return RouteCollectionInterface
+     */
+    protected function getRouteCollection(): RouteCollectionInterface
+    {
+        return $this;
+    }
+
+    /**
      * Return the prefix of the group.
      *
      * @return string

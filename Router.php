@@ -80,6 +80,14 @@ class Router implements RouteCollectionInterface
     }
 
     /**
+     * @return RouteCollectionInterface
+     */
+    protected function getRouteCollection(): RouteCollectionInterface
+    {
+        return $this;
+    }
+
+    /**
      * @param string $method
      * @param string $path
      * @param        $handler
@@ -125,27 +133,38 @@ class Router implements RouteCollectionInterface
         $this->processGroups($request);
         $this->buildNameIndex();
 
-        /** @var Route[] $routes */
-        $routes = array_merge(array_values($this->routes), array_values($this->namedRoutes));
+        /** @var Route[] $allRoutes */
+        $allRoutes = array_merge(array_values($this->routes), array_values($this->namedRoutes));
 
-        foreach ($routes as $key => $route) {
-            // check for scheme condition
-            if ($route->getScheme() !== null && $route->getScheme() !== $request->getUri()->getScheme()) {
+        foreach ($allRoutes as $route) {
+            if (!$this->allowAddRoute([
+                $route->getScheme() => [null, $request->getUri()->getScheme()],
+                $route->getHost() => [null, $request->getUri()->getHost()],
+                $route->getPort() => [null, $request->getUri()->getPort()],
+            ])) {
                 continue;
             }
-            // check for domain condition
-            if ($route->getHost() !== null && $route->getHost() !== $request->getUri()->getHost()) {
-                continue;
-            }
-            // check for port condition
-            if ($route->getPort() !== null && $route->getPort() !== $request->getUri()->getPort()) {
-                continue;
-            }
+
             if ($route->getStrategy() === null) {
                 $route->setStrategy($this->getStrategy());
             }
             $this->addRoute($route);
         }
+    }
+
+    /**
+     * @param $conditions
+     * @return bool
+     */
+    protected function allowAddRoute($conditions): bool
+    {
+        foreach ($conditions as $parameter => $values) {
+            if (in_array($parameter, $values, true)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**

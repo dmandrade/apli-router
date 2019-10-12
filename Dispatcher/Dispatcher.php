@@ -40,21 +40,21 @@ class Dispatcher extends GroupDispatcher implements RequestHandlerInterface
      *
      * @return ResponseInterface
      */
-    public function dispatchRequest(ServerRequestInterface $request)
+    public function dispatchRequest(ServerRequestInterface $request): ResponseInterface
     {
         $match = $this->dispatch($request->getMethod(), $request->getUri()->getPath());
 
         switch ($match[0]) {
-            case self::NOT_FOUND:
-                $this->setNotFoundDecoratorMiddleware();
-                break;
             case self::METHOD_NOT_ALLOWED:
                 $allowed = (array) $match[1];
                 $this->setMethodNotAllowedDecoratorMiddleware($allowed);
                 break;
             case self::FOUND:
-                $match[1]->setVars($match[2]);
+                $match[1]->setParameters($match[2]);
                 $this->setFoundMiddleware($match[1]);
+                break;
+            default:
+                $this->setNotFoundDecoratorMiddleware();
                 break;
         }
 
@@ -66,9 +66,9 @@ class Dispatcher extends GroupDispatcher implements RequestHandlerInterface
      *
      * @return void
      */
-    protected function setNotFoundDecoratorMiddleware()
+    protected function setNotFoundDecoratorMiddleware(): void
     {
-        $middleware = $this->getStrategy()->getNotFoundDecorator(new NotFoundException());
+        $middleware = $this->getStrategy()->getExceptionMiddlewareDecorator(new NotFoundException());
         $this->prependMiddleware($middleware);
     }
 
@@ -79,9 +79,9 @@ class Dispatcher extends GroupDispatcher implements RequestHandlerInterface
      *
      * @return void
      */
-    protected function setMethodNotAllowedDecoratorMiddleware(array $allowed)
+    protected function setMethodNotAllowedDecoratorMiddleware(array $allowed): void
     {
-        $middleware = $this->getStrategy()->getMethodNotAllowedDecorator(
+        $middleware = $this->getStrategy()->getExceptionMiddlewareDecorator(
             new MethodNotAllowedException($allowed)
         );
         $this->prependMiddleware($middleware);
@@ -94,7 +94,7 @@ class Dispatcher extends GroupDispatcher implements RequestHandlerInterface
      *
      * @return void
      */
-    protected function setFoundMiddleware(Route $route)
+    protected function setFoundMiddleware(Route $route): void
     {
         if ($route->getStrategy() !== null) {
             $route->setStrategy($this->getStrategy());

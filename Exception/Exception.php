@@ -20,10 +20,11 @@
 
 namespace Apli\Router\Exception;
 
+use Exception as BaseException;
 use Apli\Router\HttpExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
 
-class Exception extends \Exception implements HttpExceptionInterface
+class Exception extends BaseException implements HttpExceptionInterface
 {
     /**
      * @var array
@@ -43,16 +44,16 @@ class Exception extends \Exception implements HttpExceptionInterface
     /**
      * Constructor.
      *
-     * @param int        $status
-     * @param string     $message
-     * @param \Exception $previous
-     * @param array      $headers
-     * @param int        $code
+     * @param int           $status
+     * @param string        $message
+     * @param BaseException $previous
+     * @param array         $headers
+     * @param int           $code
      */
     public function __construct(
         $status,
         $message = null,
-        \Exception $previous = null,
+        BaseException $previous = null,
         array $headers = [],
         $code = 0
     ) {
@@ -65,7 +66,7 @@ class Exception extends \Exception implements HttpExceptionInterface
     /**
      * @return int
      */
-    public function getStatusCode()
+    public function getStatusCode(): int
     {
         return $this->status;
     }
@@ -73,7 +74,7 @@ class Exception extends \Exception implements HttpExceptionInterface
     /**
      * @return array
      */
-    public function getHeaders()
+    public function getHeaders(): array
     {
         return $this->headers;
     }
@@ -83,7 +84,7 @@ class Exception extends \Exception implements HttpExceptionInterface
      *
      * @return ResponseInterface
      */
-    public function buildJsonResponse(ResponseInterface $response)
+    public function buildJsonResponse(ResponseInterface $response): ResponseInterface
     {
         $this->headers['content-type'] = 'application/json';
         foreach ($this->headers as $key => $value) {

@@ -21,8 +21,9 @@
 namespace Apli\Router\Strategy;
 
 use Apli\Router\ContainerTrait;
-use Apli\Router\Exception\{MethodNotAllowedException, NotFoundException};
+use Apli\Router\Exception\Exception;
 use Apli\Router\Route;
+use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -37,35 +38,23 @@ class ApplicationStrategy extends AbstractStrategy
      * @param Route                  $route
      * @param ServerRequestInterface $request
      *
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws NotFoundExceptionInterface
      *
      * @return ResponseInterface
      */
-    public function invokeRouteCallable(Route $route, ServerRequestInterface $request)
+    public function invokeRouteCallable(Route $route, ServerRequestInterface $request): ResponseInterface
     {
         $controller = $route->getCallable($this->getContainer());
 
-        $response = $controller($request, $route->getVars());
-        $response = $this->applyDefaultResponseHeaders($response);
-
-        return $response;
+        $response = $controller($request, $route->getParameters());
+        return $this->applyDefaultResponseHeaders($response);
     }
 
     /**
-     * @param NotFoundException $exception
+     * @param Exception $exception
      * @return MiddlewareInterface
      */
-    public function getNotFoundDecorator(NotFoundException $exception)
-    {
-        return $this->throwThrowableMiddleware($exception);
-    }
-
-    /**
-     * @param MethodNotAllowedException $exception
-     *
-     * @return MiddlewareInterface
-     */
-    public function getMethodNotAllowedDecorator(MethodNotAllowedException $exception)
+    public function getExceptionMiddlewareDecorator(Exception $exception): MiddlewareInterface
     {
         return $this->throwThrowableMiddleware($exception);
     }
@@ -75,9 +64,9 @@ class ApplicationStrategy extends AbstractStrategy
      *
      * @param Throwable $error
      *
-     * @return \Psr\Http\Server\MiddlewareInterface
+     * @return MiddlewareInterface
      */
-    protected function throwThrowableMiddleware(Throwable $error)
+    protected function throwThrowableMiddleware(Throwable $error): MiddlewareInterface
     {
         return new class($error) implements MiddlewareInterface {
             protected $error;
@@ -99,15 +88,15 @@ class ApplicationStrategy extends AbstractStrategy
     /**
      * @return MiddlewareInterface
      */
-    public function getExceptionHandler()
+    public function getExceptionHandler(): MiddlewareInterface
     {
         return $this->getThrowableHandler();
     }
 
     /**
-     * @return MiddlewareInterface|__anonymous@2837
+     * @return MiddlewareInterface
      */
-    public function getThrowableHandler()
+    public function getThrowableHandler(): MiddlewareInterface
     {
         return new class() implements MiddlewareInterface {
             /**
@@ -117,11 +106,7 @@ class ApplicationStrategy extends AbstractStrategy
                 ServerRequestInterface $request,
                 RequestHandlerInterface $requestHandler
             ): ResponseInterface {
-                try {
-                    return $requestHandler->handle($request);
-                } catch (Throwable $e) {
-                    throw $e;
-                }
+                return $requestHandler->handle($request);
             }
         };
     }

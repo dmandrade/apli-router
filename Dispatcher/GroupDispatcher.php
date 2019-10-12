@@ -20,6 +20,10 @@
 
 namespace Apli\Router\Dispatcher;
 
+/**
+ * Class GroupDispatcher
+ * @package Apli\Router\Dispatcher
+ */
 class GroupDispatcher extends AbstractDispatcher
 {
     /**
@@ -29,22 +33,22 @@ class GroupDispatcher extends AbstractDispatcher
      */
     public function __construct($data)
     {
-        list($this->staticRouteMap, $this->variableRouteData) = $data;
+        [$this->staticRouteMap, $this->variableRouteData] = $data;
     }
 
     /**
      * @param $routeData
      * @param $uri
      *
-     * @return array|mixed[]
+     * @return array
      */
-    protected function dispatchVariableRoute($routeData, $uri)
+    protected function dispatchVariableRoute($routeData, $uri): array
     {
         foreach ($routeData as $data) {
             if (!preg_match($data['regex'], $uri, $matches)) {
                 continue;
             }
-            list($handler, $varNames) = $data['routeMap'][count($matches)];
+            [$handler, $varNames] = $data['routeMap'][count($matches)];
             $vars = [];
             $i = 0;
             foreach ($varNames as $varName) {
