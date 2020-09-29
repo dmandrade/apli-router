@@ -1,268 +1,154 @@
 <?php
-/**
- *  Copyright (c) 2018 Danilo Andrade.
+/*
+ *  Copyright (c) 2020 Danilo Andrade
  *
  *  This file is part of the apli project.
  *
- * @project apli
- * @file Router.php
- *
- * @author Danilo Andrade <danilo@webbingbrasil.com.br>
- * @date 27/08/18 at 10:26
- */
-
-/**
- * Created by PhpStorm.
- * User: Danilo
- * Date: 25/08/2018
- * Time: 13:04.
+ *  @project apli
+ *  @file UrlParser.php
+ *  @author Danilo Andrade <danilo@webbingbrasil.com.br>
+ *  @date 26/09/20 at 13:36
  */
 
 namespace Apli\Router;
 
-use Apli\Router\DataGenerator\GroupGenerator;
-use Apli\Router\Dispatcher\Dispatcher;
-use Apli\Router\Parser\Std;
-use Apli\Router\Strategy\ApplicationStrategy;
-use InvalidArgumentException;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
+use Exception;
+use function call_user_func;
+use function is_array;
+use function trim;
 
 /**
  * Class Router
  * @package Apli\Router
  */
-class Router implements RouteCollectionInterface
+class Router
 {
-    use StrategyTrait, RouteGroupTrait;
-
-    /**
-     * @var RouteParserInterface
-     */
-    protected $routeParser;
-
-    /**
-     * @var DataGeneratorInterface
-     */
-    protected $dataGenerator;
-
-    /**
-     * @var Route[]
-     */
-    protected $routes = [];
-
-    /**
-     * @var Route[]
-     */
-    protected $namedRoutes = [];
+    use RoutesSet, UrlParser, ParamTypes;
 
     /**
      * @var array
      */
-    protected static $patternMatchers = [
-        '/{(.+?):number}/'        => '{$1:[0-9]+}',
-        '/{(.+?):word}/'          => '{$1:[a-zA-Z]+}',
-        '/{(.+?):alphanum_dash}/' => '{$1:[a-zA-Z0-9-_]+}',
-        '/{(.+?):slug}/'          => '{$1:[a-z0-9-]+}',
-        '/{(.+?):uuid}/'          => '{$1:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}+}',
-    ];
+    private $invalidRouteErrorHandler;
 
     /**
-     * Constructs a route collector.
-     *
-     * @param RouteParserInterface   $routeParser
-     * @param DataGeneratorInterface $dataGenerator
+     * Router constructor.
      */
-    public function __construct(RouteParserInterface $routeParser = null, DataGeneratorInterface $dataGenerator = null)
+    public function __construct()
     {
-        $this->routeParser = $routeParser ?? new Std();
-        $this->dataGenerator = $dataGenerator ?? new GroupGenerator();
+        $_SERVER['REQUEST_METHOD'] = $this->getRequestMethod();
+
+        $this->invalidRouteErrorHandler = [
+            $this,
+            'noProcessorFoundErrorHandler'
+        ];
+
+        $this->initDefaultParamTypes();
     }
 
     /**
-     * @return RouteCollectionInterface
-     */
-    protected function getRouteCollection(): RouteCollectionInterface
-    {
-        return $this;
-    }
-
-    /**
-     * @param string $method
-     * @param string $path
-     * @param        $handler
-     *
-     * @return Route
-     */
-    public function map($method, $path, $handler): Route
-    {
-        $route = new Route($method, $this->preparePath($path), $handler);
-        $this->routes[] = $route;
-
-        return $route;
-    }
-
-    /**
-     * @param ServerRequestInterface $request
-     *
-     * @return ResponseInterface
-     */
-    public function dispatch(ServerRequestInterface $request): ResponseInterface
-    {
-        if ($this->getStrategy() === null) {
-            $this->setStrategy(new ApplicationStrategy());
-        }
-
-        $this->prepRoutes($request);
-
-        return (new Dispatcher($this->getData()))
-            ->setStrategy($this->getStrategy())
-            ->dispatchRequest($request);
-    }
-
-    /**
-     * Prepare all routes, build name index and filter out none matching
-     * routes before being passed off to the parser.
-     *
-     * @param ServerRequestInterface $request
-     *
-     * @return void
-     */
-    protected function prepRoutes(ServerRequestInterface $request): void
-    {
-        $this->processGroups($request);
-        $this->buildNameIndex();
-
-        /** @var Route[] $allRoutes */
-        $allRoutes = array_merge(array_values($this->routes), array_values($this->namedRoutes));
-
-        foreach ($allRoutes as $route) {
-            if (!$this->allowAddRoute([
-                $route->getScheme() => [null, $request->getUri()->getScheme()],
-                $route->getHost() => [null, $request->getUri()->getHost()],
-                $route->getPort() => [null, $request->getUri()->getPort()],
-            ])) {
-                continue;
-            }
-
-            if ($route->getStrategy() === null) {
-                $route->setStrategy($this->getStrategy());
-            }
-            $this->addRoute($route);
-        }
-    }
-
-    /**
-     * @param $conditions
-     * @return bool
-     */
-    protected function allowAddRoute($conditions): bool
-    {
-        foreach ($conditions as $parameter => $values) {
-            if (in_array($parameter, $values, true)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * Build an index of named routes.
-     *
-     * @return void
-     */
-    protected function buildNameIndex(): void
-    {
-        foreach ($this->routes as $key => $route) {
-            if ($route->getName() !== null) {
-                unset($this->routes[$key]);
-                $this->namedRoutes[$route->getName()] = $route;
-            }
-        }
-    }
-
-    /**
-     * Adds a route to the collection.
-     *
-     * The syntax used in the $route string depends on the used route parser.
-     *
-     * @param Route $route
-     */
-    protected function addRoute(Route $route): void
-    {
-        $path = $this->parseRoutePath($route->getPath());
-        $routeDatas = $this->routeParser->parse($path);
-        foreach ($routeDatas as $routeData) {
-            $this->dataGenerator->addRoute($route, $routeData);
-        }
-    }
-
-    /**
-     * Convenience method to convert pre-defined key words in to regex strings.
-     *
-     * @param string $path
-     *
      * @return string
      */
-    protected function parseRoutePath($path): string
+    protected function getRequestMethod(): string
     {
-        return preg_replace(array_keys(self::$patternMatchers), array_values(self::$patternMatchers), $path);
+        return $_SERVER['REQUEST_METHOD'] ?? 'GET';
     }
 
     /**
-     * Returns the collected route data, as provided by the data generator.
-     *
-     * @return array
+     * @param string $route
+     * @param $callback
+     * @param string $requestMethod
+     * @param string $routeName
+     * @throws Exception
      */
-    public function getData(): array
+    public function addRoute(
+        string $route,
+        $callback,
+        $requestMethod = 'GET',
+        string $routeName = ''): void
     {
-        return $this->dataGenerator->getData();
-    }
+        $route = trim($route, '/');
 
-    /**
-     * Get named route.
-     *
-     * @param string $name
-     *
-     * @throws InvalidArgumentException when no route of the provided name exists.
-     *
-     * @return Route
-     */
-    public function getNamedRoute($name): Route
-    {
-        $this->buildNameIndex();
-        if (array_key_exists($name, $this->namedRoutes)) {
-            return $this->namedRoutes[$name];
+        if ($route == '*') {
+            $this->universalRouteWasAdded = true;
         }
 
-        throw new InvalidArgumentException(sprintf('No route of the name (%s) exists', $name));
+        if (is_array($requestMethod)) {
+            foreach ($requestMethod as $method) {
+                $this->addRoute($route, $callback, $method, $routeName);
+            }
+        } else {
+            $this->validateRequestMethod($requestMethod);
+
+            $this->routes[$requestMethod][$route] = $callback;
+            // register route name
+            $this->registerRouteName($routeName, $route);
+        }
     }
 
     /**
-     * Add a convenient pattern matcher to the internal array for use with all routes.
-     *
-     * @param string $alias
-     * @param string $regex
-     *
-     * @return self
+     * @param string $route
+     * @throws Exception
      */
-    public function addPatternMatcher($alias, $regex): self
+    public function noProcessorFoundErrorHandler(string $route)
     {
-        $pattern = '/{(.+?):'.$alias.'}/';
-        $regex = '{$1:'.$regex.'}';
-        self::$patternMatchers[$pattern] = $regex;
-
-        return $this;
+        throw (new Exception(
+            'The processor was not found for the route ' . $route . ' in ' . $this->getAllRoutesTrace()));
     }
 
     /**
-     * @param array $patternMatchers
-     * @return Router
+     * @param callable $function
+     * @return array
      */
-    public function setPatternMatchers(array $patternMatchers): self
+    public function setNoProcessorFoundErrorHandler(callable $function)
     {
-        self::$patternMatchers = $patternMatchers;
-        return $this;
+        $oldErrorHandler = $this->invalidRouteErrorHandler;
+
+        $this->invalidRouteErrorHandler = $function;
+
+        return $oldErrorHandler;
+    }
+
+    /**
+     * @param mixed $route
+     * @return mixed|bool|string|void
+     * @throws Exception
+     */
+    public function callRoute($route)
+    {
+        $route = Utils::prepareRoute($route);
+        $requestMethod = $this->getRequestMethod();
+        $this->validateRequestMethod($requestMethod);
+        $routesForMethod = $this->getRoutesForMethod($requestMethod);
+
+        if (($result = $this->findStaticRouteProcessor($routesForMethod, $route)) !== false) {
+            return $result;
+        }
+
+        if (($result = $this->findDynamicRouteProcessor($routesForMethod, $route)) !== false) {
+            return $result;
+        }
+
+        call_user_func($this->invalidRouteErrorHandler, $route);
+    }
+
+    /**
+     * @param $route
+     * @return false|mixed
+     */
+    public function getCallback($route)
+    {
+        $route = Utils::prepareRoute($route);
+        $requestMethod = $this->getRequestMethod();
+        $routesForMethod = $this->getRoutesForMethod($requestMethod);
+
+        if (($result = $this->getStaticRouteProcessor($routesForMethod, $route)) !== false) {
+            return $result;
+        }
+
+        if (($result = $this->getDynamicRouteProcessor($routesForMethod, $route)) !== false) {
+            return $result;
+        }
+
+        call_user_func($this->invalidRouteErrorHandler, $route);
     }
 }
